@@ -2595,6 +2595,9 @@ function restartTimer() {
 function showLayer() {
   var m = state.modeDefs[state.currentMode];
   var oldLayer = els.layers[state.activeLayer];
+  // 切素材前先停掉上一层正在播放的视频，避免其声音与音乐/下一段素材叠加
+  var oldVid = oldLayer.querySelector('video');
+  if (oldVid && !oldVid.paused) { try { oldVid.pause(); } catch (e) {} }
   var newLayer = els.layers[1 - state.activeLayer];
   state.activeLayer = 1 - state.activeLayer;
   var cur = photoElAt(state.photoIndex);
