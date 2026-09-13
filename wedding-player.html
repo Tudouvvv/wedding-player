@@ -707,28 +707,30 @@ function parseLRC(text, transText) {
     arr.sort(function (a, b) { return a.t - b.t; });
     return arr;
   };
-  var META_RE = /^(作词|作曲|编曲|制作人|制作|混音|录音|监制|和声|演唱|原唱|翻唱|词|曲|出品|OP|SP)\s*[:：]/;
+  var META_RE = /^(作词|作曲|编曲|制作人|制作|混音|录音|监制|和声|演唱|原唱|翻唱|出品|母带|Lyrics|Composed|Arranged|Produced|Mixed|Mastered|Written|Producer|Music|Guitar|Piano|Bass|Drum|Strings)\s*(?:by|：|:)/i;
   var TRANSPLACE_RE = /^(以下歌词翻译由|本翻译由|QQ音乐享有本翻译作品的著作权|TME享有本翻译作品的著作权|翻译.*提供|\/+$)/;
+  var isMeta = function (s) { return !s || META_RE.test(s) || TRANSPLACE_RE.test(s); };
   var main = build(text);
   var trans = build(transText);
   if (trans.length) {
     // 在线歌词 / 独立译文文件：翻译轨按时间轴对齐到原文行
     var ti = 0;
     for (var k = 0; k < main.length; k++) {
-      if (META_RE.test(main[k].text) || main[k].text.length > 80) continue;
+      if (isMeta(main[k].text) || main[k].text.length > 80) continue;
       while (ti < trans.length && trans[ti].t < main[k].t - 0.05) ti++;
       if (ti < trans.length && Math.abs(trans[ti].t - main[k].t) < 1.0) {
         var tt = trans[ti].text;
-        if (tt && tt !== main[k].text && !META_RE.test(tt) && !TRANSPLACE_RE.test(tt)) main[k].trans = tt;
+        if (tt && tt !== main[k].text && !isMeta(tt)) main[k].trans = tt;
       }
     }
-    return main;
+    return main.filter(function (l) { return !isMeta(l.text); });
   }
   // 本地单文件双语（如 163MusicLyrics 输出）：
   //   合并格式「原文 -> 译文」先按分隔符拆开；交错/独立格式再按相同时间戳配对，首行=原文，其余=译文
   var MERGE_RE = /\s+->\s+|\s*→\s*|\s+=>\s+/;
   var byT = {}, order = [];
   main.forEach(function (ln) {
+    if (isMeta(ln.text)) return; // 跳过作词/作曲/版权等制作信息行
     var parts = String(ln.text).split(MERGE_RE).map(function (s) { return s.trim(); }).filter(Boolean);
     var orig = parts.length ? parts[0] : '';
     var tr = parts.length > 1 ? parts.slice(1).join(' / ') : '';
@@ -743,7 +745,7 @@ function parseLRC(text, transText) {
       else if (extra && g.trans.indexOf(extra) < 0) g.trans += ' / ' + extra;
     }
   });
-  return order;
+  return order.filter(function (l) { return !isMeta(l.text); });
 }
 // 本地译文侧车文件后缀（163MusicLyrics「独立」分文件保存等场景）
 var TRANS_SUFFIXES = ['.trans', '.tran', '.translation', '.tlyric', '.译文', '.翻譯', '.翻译', '.zh', '.cn', '.tr', '.romaji', '.音译'];
