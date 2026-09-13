@@ -687,7 +687,6 @@ var els = { layers: [$('layer0'), $('layer1')] };
 
 /* ================= LRC 解析 ================= */
 function parseLRC(text, transText) {
-  var out = [];
   var build = function (src) {
     var arr = [];
     if (!src) return arr;
@@ -708,22 +707,51 @@ function parseLRC(text, transText) {
     arr.sort(function (a, b) { return a.t - b.t; });
     return arr;
   };
-  var main = build(text);
-  var trans = build(transText);
-  if (!trans.length) return main;
-  // 合并：翻译行按时间轴对齐到原文行
   var META_RE = /^(作词|作曲|编曲|制作人|制作|混音|录音|监制|和声|演唱|原唱|翻唱|词|曲|出品|OP|SP)\s*[:：]/;
   var TRANSPLACE_RE = /^(以下歌词翻译由|本翻译由|QQ音乐享有本翻译作品的著作权|TME享有本翻译作品的著作权|翻译.*提供|\/+$)/;
-  var ti = 0;
-  for (var k = 0; k < main.length; k++) {
-    if (META_RE.test(main[k].text) || main[k].text.length > 80) continue;
-    while (ti < trans.length && trans[ti].t < main[k].t - 0.05) ti++;
-    if (ti < trans.length && Math.abs(trans[ti].t - main[k].t) < 1.0) {
-      var tt = trans[ti].text;
-      if (tt && tt !== main[k].text && !META_RE.test(tt) && !TRANSPLACE_RE.test(tt)) main[k].trans = tt;
+  var main = build(text);
+  var trans = build(transText);
+  if (trans.length) {
+    // 在线歌词 / 独立译文文件：翻译轨按时间轴对齐到原文行
+    var ti = 0;
+    for (var k = 0; k < main.length; k++) {
+      if (META_RE.test(main[k].text) || main[k].text.length > 80) continue;
+      while (ti < trans.length && trans[ti].t < main[k].t - 0.05) ti++;
+      if (ti < trans.length && Math.abs(trans[ti].t - main[k].t) < 1.0) {
+        var tt = trans[ti].text;
+        if (tt && tt !== main[k].text && !META_RE.test(tt) && !TRANSPLACE_RE.test(tt)) main[k].trans = tt;
+      }
     }
+    return main;
   }
-  return main;
+  // 本地单文件双语（如 163MusicLyrics 输出）：
+  //   合并格式「原文 -> 译文」先按分隔符拆开；交错/独立格式再按相同时间戳配对，首行=原文，其余=译文
+  var MERGE_RE = /\s+->\s+|\s*→\s*|\s+=>\s+/;
+  var byT = {}, order = [];
+  main.forEach(function (ln) {
+    var parts = String(ln.text).split(MERGE_RE).map(function (s) { return s.trim(); }).filter(Boolean);
+    var orig = parts.length ? parts[0] : '';
+    var tr = parts.length > 1 ? parts.slice(1).join(' / ') : '';
+    var key = String(ln.t);
+    if (!byT[key]) {
+      byT[key] = { t: ln.t, text: orig, trans: tr };
+      order.push(byT[key]);
+    } else {
+      var g = byT[key];
+      var extra = tr || orig;
+      if (!g.trans) g.trans = extra;
+      else if (extra && g.trans.indexOf(extra) < 0) g.trans += ' / ' + extra;
+    }
+  });
+  return order;
+}
+// 本地译文侧车文件后缀（163MusicLyrics「独立」分文件保存等场景）
+var TRANS_SUFFIXES = ['.trans', '.tran', '.translation', '.tlyric', '.译文', '.翻譯', '.翻译', '.zh', '.cn', '.tr', '.romaji', '.音译'];
+function pickTransText(pool, baseKey) {
+  for (var i = 0; i < TRANS_SUFFIXES.length; i++) {
+    if (pool[baseKey + TRANS_SUFFIXES[i]]) return pool[baseKey + TRANS_SUFFIXES[i]];
+  }
+  return '';
 }
 
 /* ================= 素材读取 ================= */
@@ -781,7 +809,7 @@ function ingestFiles(fileList) {
     state.tracks.forEach(function (t) {
       if (t.source === 'local' && t.grp === 'media') {
         var k = basenameNoExt(t.name).toLowerCase();
-        if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+        if (pool[k]) { t.lrc = parseLRC(pool[k], pickTransText(pool, k)); t.lrcRaw = pool[k]; matched++; }
       }
     });
     if (matched) toast('已自动匹配 ' + matched + ' 首歌词');
@@ -876,7 +904,7 @@ function addLocalMusicFiles(fileList, replaceToken, modeKey) {
     state.tracks.forEach(function (t) {
       if (t.grp === 'manual' && !t.lrcRaw && (!modeKey || t.srcMode === modeKey)) {
         var k = basenameNoExt(t.name).toLowerCase();
-        if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+        if (pool[k]) { t.lrc = parseLRC(pool[k], pickTransText(pool, k)); t.lrcRaw = pool[k]; matched++; }
       }
     });
     if (matched) toast('已为 ' + matched + ' 首本地音乐匹配歌词');
@@ -970,7 +998,7 @@ function loadMusicDirFromServer(dirName, grp, defModes, remember, label) {
       state.tracks.forEach(function (t) {
         if (t.grp === grp && !t.lrcRaw) {
           var k = basenameNoExt(t.name).toLowerCase();
-          if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+          if (pool[k]) { t.lrc = parseLRC(pool[k], pickTransText(pool, k)); t.lrcRaw = pool[k]; matched++; }
         }
       });
       if (matched) toast('已为 ' + matched + ' 首本地音乐匹配歌词');
@@ -3273,7 +3301,7 @@ function loadDirFromServer(dirName) {
       state.tracks.forEach(function (t) {
         if (t.source === 'server' && t.grp === 'media') {
           var k = basenameNoExt(t.name).toLowerCase();
-          if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+          if (pool[k]) { t.lrc = parseLRC(pool[k], pickTransText(pool, k)); t.lrcRaw = pool[k]; matched++; }
         }
       });
       if (matched) toast('已自动匹配 ' + matched + ' 首歌词');
