@@ -2681,6 +2681,7 @@ function isVideoShowing() {
 }
 function startVideoPlayback(vid) {
   vid.muted = false;
+  if (state.photoPaused) return; // 已暂停：保持暂停，等用户继续
   vid.play().catch(function () { toast('视频播放失败，跳过'); nextPhotoItem(); });
 }
 function nextPhotoItem() {
@@ -2730,7 +2731,17 @@ function resumeParticles() {
 function togglePhotoPause() {
   state.photoPaused = !state.photoPaused;
   $('btnPhotoPause').textContent = state.photoPaused ? '▶' : 'Ⅱ';
-  if (!state.photoPaused) restartTimer();
+  var cur = photoElAt(state.photoIndex);
+  if (cur && cur.type === 'video') {
+    // 视频由自身时长控制，暂停/继续需直接作用于 video
+    var vid = els.layers[state.activeLayer].querySelector('video');
+    if (vid) {
+      if (state.photoPaused) { try { vid.pause(); } catch (e) {} }
+      else { vid.play().catch(function () {}); }
+    }
+  } else if (!state.photoPaused) {
+    restartTimer();
+  }
   showControls();
 }
 function updateCounter() { $('photoCounter').textContent = (state.photoIndex + 1) + ' / ' + state.photos.length; }
