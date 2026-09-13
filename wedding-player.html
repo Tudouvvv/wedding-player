@@ -197,8 +197,9 @@ input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
   background: linear-gradient(transparent, rgba(0,0,0,.85));
   padding: 30px 20px 14px; opacity: 0; transform: translateY(12px); transition: all .35s;
+  pointer-events: none;
 }
-#controls.show { opacity: 1; transform: none; }
+#controls.show { opacity: 1; transform: none; pointer-events: auto; }
 #musicProgress {
   height: 5px; background: rgba(255,255,255,.18); border-radius: 3px;
   cursor: pointer; margin: 0 auto 10px; max-width: 1100px;
@@ -277,6 +278,76 @@ input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
   padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
   font-family: inherit;
 }
+
+/* ===== P1 步骤条 / 分步面板 ===== */
+.step-bar {
+  position: sticky; top: 0; z-index: 20;
+  max-width: 1180px; margin: 10px auto 0; padding: 12px 0;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  background: linear-gradient(#0b0b10 78%, rgba(11,11,16,0));
+}
+.step-item { display: flex; align-items: center; gap: 8px; color: #8f8f9e; font-size: 14px; cursor: pointer; background: none; border: none; font-family: inherit; padding: 0; }
+.step-item .step-dot {
+  width: 26px; height: 26px; border-radius: 50%; display: inline-flex;
+  align-items: center; justify-content: center; font-size: 13px;
+  border: 2px solid #33333f; color: #8f8f9e; background: #14141b;
+}
+.step-item.active { color: #e8c86a; }
+.step-item.active .step-dot { border-color: #e8c86a; color: #e8c86a; box-shadow: 0 0 12px rgba(232,200,106,.35); }
+.step-item.done .step-dot { background: #e8c86a; border-color: #e8c86a; color: #1a1405; }
+.step-line { width: 60px; height: 2px; background: #33333f; border-radius: 2px; }
+.step-line.done { background: #e8c86a; }
+.step-panel { max-width: 1180px; margin: 0 auto; }
+.step1-inner { max-width: 860px; margin: 0 auto; }
+.step2-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 4px auto 14px; flex-wrap: wrap; }
+.step2-head h2 { font-size: 17px; color: #e8c86a; }
+.step2-head .row { margin: 0; }
+.step2-head .row select { width: 260px; }
+.step-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 22px auto 30px; }
+.step-nav.between { justify-content: space-between; }
+#btnToStep1, #btnToStep2 { padding: 12px 34px; font-size: 16px; }
+
+/* 折叠区 */
+details.fold { border: 1px solid #26262f; border-radius: 12px; background: #121218; margin-top: 14px; }
+details.fold > summary {
+  cursor: pointer; list-style: none; padding: 12px 16px; font-size: 14px; color: #d6d6e2;
+  display: flex; align-items: center; gap: 6px;
+}
+details.fold > summary::-webkit-details-marker { display: none; }
+details.fold > summary::before { content: '▸'; color: #e8c86a; }
+details.fold[open] > summary::before { content: '▾'; }
+details.fold > summary .sum-badge { font-size: 12px; color: #9a9aa6; margin-left: auto; }
+details.fold > .fold-body { padding: 0 16px 16px; }
+
+/* 环节卡三列网格 */
+#modeCards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 1100px) { #modeCards { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) { #modeCards { grid-template-columns: 1fr; } }
+.mode-card { border: 1px solid #26262f; border-radius: 12px; padding: 0; margin: 0; background: #121218; overflow: hidden; }
+.mode-head {
+  width: 100%; text-align: left; background: none; border: none; color: #e8c86a;
+  padding: 12px 14px; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px;
+}
+.mode-head:hover { background: rgba(232,200,106,.06); }
+.mode-head .mode-head-title { font-size: 15px; }
+.mode-head .mode-head-sum { font-size: 12px; color: #9a9aa6; margin-left: auto; }
+.mode-head .mode-head-caret { color: #e8c86a; transition: transform .2s; }
+.mode-card.collapsed .mode-body { display: none; }
+.mode-card.collapsed .mode-head-caret { transform: rotate(-90deg); }
+.mode-body { padding: 0 14px 14px; }
+.mode-body label { display: block; font-size: 13px; color: #ababb9; margin: 12px 0 5px; }
+.mode-body > label:first-child { margin-top: 2px; }
+.mode-body input[type="range"] { width: 100%; accent-color: #e8c86a; cursor: pointer; }
+.mode-body input[type="text"], .mode-body select { width: 100%; box-sizing: border-box; }
+.mode-body select { background: #1c1c25; color: #ececf3; border: 1px solid #33333f; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; }
+.mode-body .val { color: #e8c86a; font-weight: 600; }
+.mode-body .check { display: flex; align-items: center; gap: 7px; margin-top: 10px; }
+.mode-body .check input { width: auto; accent-color: #e8c86a; }
+.mode-adv { border-top: 1px solid #23232c; margin-top: 12px; padding-top: 4px; }
+.mode-adv > summary { cursor: pointer; font-size: 12px; color: #9a9aa6; list-style: none; padding: 6px 0; }
+.mode-adv > summary::-webkit-details-marker { display: none; }
+.mode-adv > summary::before { content: '▸ '; color: #e8c86a; }
+.mode-adv[open] > summary::before { content: '▾ '; }
 </style>
 </head>
 <body>
@@ -289,9 +360,17 @@ input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
   </div>
   <div id="modeBanner" class="mode-banner"></div>
 
-  <div class="setup-grid">
+  <div id="stepBar" class="step-bar">
+    <button type="button" class="step-item active" data-step="1"><span class="step-dot">1</span>素材与音乐</button>
+    <span class="step-line"></span>
+    <button type="button" class="step-item" data-step="2"><span class="step-dot">2</span>环节设置</button>
+  </div>
+
+  <div id="step1" class="step-panel">
+    <div class="step1-inner">
     <section class="card">
-      <h2>① 素材（照片 / 音乐 / 歌词）</h2>
+      <h2>① 素材与音乐</h2>
+      <h3>素材文件夹</h3>
       <div id="dropZone" class="dropzone">
         <p>📁 点击选择素材文件夹</p>
         <p class="hint">自动识别文件夹内的照片、音乐和 .lrc 歌词，或直接把整个文件夹拖到这里</p>
@@ -315,6 +394,15 @@ input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
       <input type="file" id="fileInputMusicFiles" accept="audio/*,.mp3,.wav,.ogg,.flac,.m4a,.aac,.opus,.mgg,.mflac,.ncm,.qmcflac,.qmcogg" multiple class="hidden">
       <div id="musicImportStatus" class="status hidden"></div>
       <p class="hint">与照片素材文件夹互不影响：本地服务模式下「📁 导入音乐文件夹」选择程序目录内的音乐文件夹（如 music/仪式），重启后自动重新加载；音乐文件名支持中文/空格（需配合新版 wedding-server.exe）。「🎵 选择音乐文件」可多选任意位置的音频（浏览器方式，当次会话有效）。QQ音乐/网易云 VIP 下载的 <b>.mgg/.mflac/.ncm</b> 是加密专属格式，无法直接播放 —— 请先用「音钥 MusicKey」等解锁工具转成 mp3/ogg/flac 后再导入。</p>
+
+      <details id="trackListFold" class="fold">
+        <summary>🎵 音乐列表<span class="sum-badge" id="trackListCount"></span></summary>
+        <div class="fold-body"><div id="trackList"></div></div>
+      </details>
+
+      <details id="advancedFold" class="fold">
+        <summary>高级：在线歌单 / 登录<span class="sum-badge" id="advancedBadge"></span></summary>
+        <div class="fold-body">
 
       <h3>🎵 在线音乐（直链）</h3>
       <div class="online-add">
@@ -374,13 +462,19 @@ input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
       </details>
       <p class="hint">在浏览器打开 music.163.com 并登录 → F12 → 应用(Application) → Cookie → 复制 MUSIC_U=... 粘贴到这里，VIP 歌曲即可完整播放（仅保存在本机）。<br><span id="apiMode"></span><br>歌单导入需联网。QQ / 网易云歌单直接使用对应平台的播放源；用「启动播放器.bat」启动更稳定。</p>
 
-      <h3>🎵 音乐列表（本地 + 在线 + 歌单）</h3>
-      <div id="trackList"></div>
+        </div>
+      </details>
     </section>
 
-    <section class="card">
-      <h2>② 三种环节模式</h2>
-      <div id="modeCards"></div>
+      <div class="step-nav">
+        <button id="btnToStep2" class="primary">下一步：环节设置 →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="step2" class="step-panel hidden">
+    <div class="step2-head">
+      <h2>② 环节设置</h2>
       <div class="row">
         <label>照片填充方式</label>
         <select id="coverSelect">
@@ -388,14 +482,14 @@ input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
           <option value="cover">铺满屏幕（16:9 横图效果更佳）</option>
         </select>
       </div>
-    </section>
-  </div>
-
-  <div id="preflight" class="preflight"></div>
-
-  <div class="start-bar">
-    <button id="btnStart" class="primary">▶ 开始播放</button>
-    <p class="hint" style="margin-top:12px">推荐双击「启动播放器.bat」启动（歌单导入更稳定）；直接双击本文件也可用。演出时把窗口拖到投影仪屏幕，按 F 全屏，按 M 切换环节。</p>
+    </div>
+    <div id="modeCards"></div>
+    <div id="preflight" class="preflight"></div>
+    <div class="step-nav between">
+      <button id="btnToStep1" class="btn">← 上一步</button>
+      <button id="btnStart" class="primary">▶ 开始播放</button>
+    </div>
+    <p class="hint" style="text-align:center;margin-bottom:24px">推荐双击「启动播放器.bat」启动（歌单导入更稳定）；直接双击本文件也可用。演出时把窗口拖到投影仪屏幕，按 F 全屏，按 M 切换环节。</p>
   </div>
 </div>
 
@@ -581,7 +675,9 @@ var state = {
   localMusicDirs: [],
   genericDir: '',
   musicPlaying: false,
-  uiLocked: false
+  uiLocked: false,
+  modeCardCollapsed: { warmup: false, ceremony: false, ending: false },
+  modeAdvOpen: { warmup: false, ceremony: false, ending: false }
 };
 var els = { layers: [$('layer0'), $('layer1')] };
 
@@ -906,7 +1002,11 @@ function pickModeLocalDir(key) {
 // 启动时按记忆的文件夹列表重新加载本地音乐（服务器模式）
 function loadPersistedMusicDirs() {
   if (!SERVER_MODE || !state.localMusicDirs.length) return;
-  var list = state.localMusicDirs.slice();
+  // 已被任一环节设为「专属目录」的文件夹跳过通用加载：否则与专属加载竞争同一目录，
+  // 去重后可能让该环节队列为空（预检绿、现场无声）。专属目录由 loadModeLocalDir 负责加载。
+  var dedicated = {};
+  MODE_KEYS.forEach(function (k) { if (state.modeLocalDirs[k]) dedicated[state.modeLocalDirs[k]] = true; });
+  var list = state.localMusicDirs.filter(function (d) { return !dedicated[d]; });
   var idx = 0;
   (function next() {
     if (idx >= list.length) { buildQueue(); return; }
@@ -1217,54 +1317,76 @@ function modeCardsChipClick(e) {
   renderModeCards();
   saveConfig();
 }
+function modeSummary(k) {
+  var d = state.modeDefs[k];
+  var src = { all: '全部', playlist: '歌单', local: '本地' }[state.modeMusicSource[k] || 'all'];
+  return d.photoDur + '秒 · ' + src + ' · ' + (d.transitions ? d.transitions.length : 0) + '种特效';
+}
 function renderModeCards() {
   var wrap = $('modeCards'), html = '';
   MODE_KEYS.forEach(function (k) {
     var d = state.modeDefs[k];
-    html += '<div class="mode-card" data-mode="' + k + '">'
-      + '<h3>' + (d.icon ? d.icon + ' ' : '') + d.name + ' 环节</h3>'
-      + '<label>素材文件夹（可留空共用上方素材）</label>'
-      + '<div class="row" style="margin-top:2px">'
-      + '<button type="button" class="btn mini" data-act="pickdir" data-mode="' + k + '" style="flex:none">📁 选择文件夹</button>'
-      + '<span id="dirVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeDirs[k] ? esc(state.modeDirs[k]) : '（未设置，用上方素材）') + '</span>'
-      + '<button type="button" class="btn mini danger" data-act="cleardir" data-mode="' + k + '" style="flex:none"' + (state.modeDirs[k] ? '' : ' disabled') + '>✕</button>'
+    var collapsed = !!(state.modeCardCollapsed && state.modeCardCollapsed[k]);
+    var advOpen = !!(state.modeAdvOpen && state.modeAdvOpen[k]);
+    html += '<div class="mode-card' + (collapsed ? ' collapsed' : '') + '" data-mode="' + k + '">'
+      + '<button type="button" class="mode-head" data-act="togglecard" data-mode="' + k + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '">'
+      +   '<span class="mode-head-title">' + (d.icon ? d.icon + ' ' : '') + d.name + '环节</span>'
+      +   '<span class="mode-head-sum">' + modeSummary(k) + '</span>'
+      +   '<span class="mode-head-caret">▾</span>'
+      + '</button>'
+      + '<div class="mode-body">'
+      +   '<label>照片停留 <span class="val">' + d.photoDur + '</span> 秒</label>'
+      +   '<input type="range" min="2" max="20" step="1" value="' + d.photoDur + '" data-f="photoDur">'
+      +   '<label>切换特效（可多选，每张照片随机切换）</label>'
+      +   '<div class="chip-group">'
+      +   TRANSITION_OPTIONS.map(function (o) {
+            return '<button type="button" class="chip' + (d.transitions.indexOf(o[0]) >= 0 ? ' on' : '') + '" data-f="transition" data-val="' + o[0] + '">' + o[1] + '</button>';
+          }).join('')
+      +   '</div>'
+      +   '<label>粒子特效（可多选，随机切换）</label>'
+      +   '<div class="chip-group">'
+      +   PARTICLE_OPTIONS.map(function (o) {
+            return '<button type="button" class="chip' + (d.particlesList.indexOf(o[0]) >= 0 ? ' on' : '') + '" data-f="particles" data-val="' + o[0] + '">' + o[1] + '</button>';
+          }).join('')
+      +   '</div>'
+      +   '<label>叠加文字（留空不显示，仪式环节可用）</label>'
+      +   '<input type="text" data-f="overlay" value="' + esc(d.overlay) + '" placeholder="如：欢迎参加我们的婚礼">'
+      +   '<label class="check"><input type="checkbox" data-f="lyrics"' + (d.lyrics ? ' checked' : '') + '> 该环节显示歌词</label>'
+      +   '<label class="check"><input type="checkbox" data-f="shuffle"' + (d.shuffle ? ' checked' : '') + '> 随机播放该环节音乐</label>'
+      +   '<label class="check"><input type="checkbox" data-f="photoShuffle"' + (d.photoShuffle ? ' checked' : '') + '> 照片随机轮播（一轮内不重复）</label>'
+      +   '<details class="mode-adv"' + (advOpen ? ' open' : '') + '>'
+      +     '<summary>本环节高级：素材 / 歌单 / 音乐来源</summary>'
+      +     '<label>素材文件夹（可留空共用上方素材）</label>'
+      +     '<div class="row" style="margin-top:2px">'
+      +     '<button type="button" class="btn mini" data-act="pickdir" data-mode="' + k + '" style="flex:none">📁 选择文件夹</button>'
+      +     '<span id="dirVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeDirs[k] ? esc(state.modeDirs[k]) : '（未设置，用上方素材）') + '</span>'
+      +     '<button type="button" class="btn mini danger" data-act="cleardir" data-mode="' + k + '" style="flex:none"' + (state.modeDirs[k] ? '' : ' disabled') + '>✕</button>'
+      +     '</div>'
+      +     '<label>歌单链接（本环节专用，只填一个，可留空）</label>'
+      +     '<input type="text" data-f="playlists" value="' + esc(state.modePlaylists[k] || '') + '" placeholder="粘贴本环节的歌单链接，如 y.qq.com/... 或 music.163.com/...">'
+      +     '<label>音乐来源（本环节播放哪批音乐）</label>'
+      +     '<select data-f="musicSource">'
+      +     option('all', '全部（歌单 + 本地一起，默认）', state.modeMusicSource[k] || 'all')
+      +     option('playlist', '歌单（只放歌单导入 + 在线直链，需网络）', state.modeMusicSource[k] || 'all')
+      +     option('local', '本地（只放本地已下载/扫描的音乐，离线最稳）', state.modeMusicSource[k] || 'all')
+      +     '</select>'
+      +     '<label>本地音乐文件夹（本环节专用：设置后该环节只播此目录的音乐）</label>'
+      +     '<div class="row" style="margin-top:2px">'
+      +     '<button type="button" class="btn mini" data-act="picklocaldir" data-mode="' + k + '" style="flex:none">💿 选择</button>'
+      +     '<span id="mlVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeLocalDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeLocalDirs[k] ? esc(state.modeLocalDirs[k]) : '（未设置：用上方「导入本地音乐」或素材文件夹里的音乐）') + '</span>'
+      +     '<button type="button" class="btn mini danger" data-act="clearlocaldir" data-mode="' + k + '" style="flex:none"' + (state.modeLocalDirs[k] ? '' : ' disabled') + '>✕</button>'
+      +     '</div>'
+      +   '</details>'
       + '</div>'
-      + '<label>歌单链接（本环节专用，只填一个，可留空）</label>'
-      + '<input type="text" data-f="playlists" value="' + esc(state.modePlaylists[k] || '') + '" placeholder="粘贴本环节的歌单链接，如 y.qq.com/... 或 music.163.com/...">'
-      + '<label>音乐来源（本环节播放哪批音乐，歌单 / 本地 二选一）</label>'
-      + '<select data-f="musicSource">'
-      + option('all', '全部（歌单 + 本地一起，默认）', state.modeMusicSource[k] || 'all')
-      + option('playlist', '歌单（只放歌单导入 + 在线直链，需网络）', state.modeMusicSource[k] || 'all')
-      + option('local', '本地（只放本地已下载/扫描的音乐，离线最稳）', state.modeMusicSource[k] || 'all')
-      + '</select>'
-      + '<label>本地音乐文件夹（本环节专用：设置后该环节只播此目录的音乐，未设置才用上方通用/素材音乐）</label>'
-      + '<div class="row" style="margin-top:2px">'
-      + '<button type="button" class="btn mini" data-act="picklocaldir" data-mode="' + k + '" style="flex:none">💿 选择</button>'
-      + '<span id="mlVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeLocalDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeLocalDirs[k] ? esc(state.modeLocalDirs[k]) : '（未设置：用上方「导入本地音乐」或素材文件夹里的音乐）') + '</span>'
-      + '<button type="button" class="btn mini danger" data-act="clearlocaldir" data-mode="' + k + '" style="flex:none"' + (state.modeLocalDirs[k] ? '' : ' disabled') + '>✕</button>'
-      + '</div>'
-      + '<label>照片停留 <span class="val">' + d.photoDur + '</span> 秒</label>'
-      + '<input type="range" min="2" max="20" step="1" value="' + d.photoDur + '" data-f="photoDur">'
-      + '<label>切换特效（可多选，每张照片随机切换）</label>'
-      + '<div class="chip-group">'
-      + TRANSITION_OPTIONS.map(function (o) {
-          return '<button class="chip' + (d.transitions.indexOf(o[0]) >= 0 ? ' on' : '') + '" data-f="transition" data-val="' + o[0] + '">' + o[1] + '</button>';
-        }).join('')
-      + '</div>'
-      + '<label>粒子特效（可多选，随机切换）</label>'
-      + '<div class="chip-group">'
-      + PARTICLE_OPTIONS.map(function (o) {
-          return '<button class="chip' + (d.particlesList.indexOf(o[0]) >= 0 ? ' on' : '') + '" data-f="particles" data-val="' + o[0] + '">' + o[1] + '</button>';
-        }).join('')
-      + '</div>'
-      + '<label>叠加文字（留空不显示，仪式环节可用）</label>'
-      + '<input type="text" data-f="overlay" value="' + esc(d.overlay) + '" placeholder="如：欢迎参加我们的婚礼">'
-      + '<label class="check"><input type="checkbox" data-f="lyrics"' + (d.lyrics ? ' checked' : '') + '> 该环节显示歌词</label>'
-      + '<label class="check"><input type="checkbox" data-f="shuffle"' + (d.shuffle ? ' checked' : '') + '> 随机播放该环节音乐</label>'
-      + '<label class="check"><input type="checkbox" data-f="photoShuffle"' + (d.photoShuffle ? ' checked' : '') + '> 照片随机轮播（一轮内不重复）</label>'
       + '</div>';
   });
   wrap.innerHTML = html;
+}
+function refreshModeSummary(key) {
+  var card = document.querySelector('#modeCards .mode-card[data-mode="' + key + '"]');
+  if (!card) return;
+  var el = card.querySelector('.mode-head-sum');
+  if (el) el.textContent = modeSummary(key);
 }
 function modeCardsInput(e) {
   var el = e.target, f = el.getAttribute('data-f');
@@ -1308,6 +1430,7 @@ function modeCardsInput(e) {
   } else {
     def[f] = el.value;
   }
+  refreshModeSummary(key);
   saveConfig();
 }
 
@@ -1389,7 +1512,7 @@ function dirListClick(e) {
       saveConfig();
       closeDirPicker();
       loadModeLocalDir(mk).then(function (ok) {
-        renderModeCards(); renderTrackList(); updateStats();
+        renderModeCards(); renderTrackList(); updateStats(); refreshPreflight();
         if (ok) toast('已设置「' + state.modeDefs[mk].name + '」本地音乐文件夹：' + (path || '程序根目录'));
       });
       return;
@@ -1398,6 +1521,7 @@ function dirListClick(e) {
       state.modeDirs[_dirPickerMode] = path;
       saveConfig();
       renderModeCards();
+      refreshPreflight();
       toast('已设置「' + state.modeDefs[_dirPickerMode].name + '」素材文件夹：' + (path || '（用上方素材）'));
       closeDirPicker();
     }
@@ -1407,6 +1531,7 @@ function clearModeDir(modeKey) {
   state.modeDirs[modeKey] = '';
   saveConfig();
   renderModeCards();
+  refreshPreflight();
   toast('已清空「' + state.modeDefs[modeKey].name + '」素材文件夹，使用上方素材');
 }
 
@@ -2016,9 +2141,26 @@ function showScreen(name) {
   $('screenSetup').classList.toggle('hidden', name !== 'setup');
   $('screenPlayer').classList.toggle('hidden', name !== 'player');
 }
+function showStep(n) {
+  var s1 = $('step1'), s2 = $('step2');
+  if (s1) s1.classList.toggle('hidden', n !== 1);
+  if (s2) s2.classList.toggle('hidden', n !== 2);
+  var items = document.querySelectorAll('#stepBar .step-item');
+  for (var i = 0; i < items.length; i++) {
+    var k = parseInt(items[i].getAttribute('data-step'), 10);
+    items[i].classList.toggle('active', k === n);
+    items[i].classList.toggle('done', k < n);
+  }
+  var line = document.querySelector('#stepBar .step-line');
+  if (line) line.classList.toggle('done', n > 1);
+  if (n === 2) refreshPreflight();
+  var ss = $('screenSetup');
+  if (ss) ss.scrollTop = 0;
+}
 function startPlayback() {
   if (!state.photos.length) {
-    toast('请先选择照片文件夹（点击上方素材区选择）');
+    toast('请先选择照片文件夹（第一步「素材与音乐」）');
+    showStep(1);
     var dz = $('dropZone');
     if (dz) {
       dz.classList.add('drag');
@@ -2738,6 +2880,7 @@ function wireEvents() {
   $('neteaseCookie').addEventListener('change', function () {
     state.neteaseCookie = this.value.trim();
     saveConfig();
+    updateStats();
     toast(state.neteaseCookie ? '网易云 Cookie 已保存' : '网易云 Cookie 已清空');
   });
   $('btnQrLogin').addEventListener('click', startQrLogin);
@@ -2747,6 +2890,7 @@ function wireEvents() {
     state.qqCookie = this.value.trim();
     saveConfig();
     updateQqCookieStatus();
+    updateStats();
     toast(state.qqCookie ? 'QQ音乐 Cookie 已识别，播放时自动使用' : 'QQ音乐 Cookie 已清空');
   });
   $('trackList').addEventListener('click', trackListClick);
@@ -2761,7 +2905,31 @@ function wireEvents() {
     else if (act === 'cleardir') { clearModeDir(mode); }
     else if (act === 'picklocaldir') { pickModeLocalDir(mode); }
     else if (act === 'clearlocaldir') { clearModeLocalDir(mode); }
+    else if (act === 'togglecard') {
+      var card = btn.closest('.mode-card');
+      if (card) {
+        var nowCollapsed = card.classList.toggle('collapsed');
+        state.modeCardCollapsed[mode] = nowCollapsed;
+        btn.setAttribute('aria-expanded', nowCollapsed ? 'false' : 'true');
+      }
+    }
   });
+  // 记录环节卡「本环节高级」的展开态（renderModeCards 重建后据此恢复）
+  $('modeCards').addEventListener('toggle', function (e) {
+    var det = e.target;
+    if (det && det.classList && det.classList.contains('mode-adv')) {
+      var card = det.closest('.mode-card');
+      if (card) state.modeAdvOpen[card.getAttribute('data-mode')] = det.open;
+    }
+  }, true);
+  // 步骤条切换
+  $('stepBar').addEventListener('click', function (e) {
+    var it = e.target.closest('.step-item');
+    if (!it) return;
+    showStep(parseInt(it.getAttribute('data-step'), 10) || 1);
+  });
+  $('btnToStep1').addEventListener('click', function () { showStep(1); });
+  $('btnToStep2').addEventListener('click', function () { showStep(2); });
   $('dirList').addEventListener('click', dirListClick);
   $('btnDirCancel').addEventListener('click', closeDirPicker);
   $('btnDirUseDefault').addEventListener('click', function () {
@@ -2846,6 +3014,17 @@ function updateStats() {
   $('statTracks').textContent = '音乐 ' + state.tracks.length;
   var lrcCount = state.tracks.filter(function (t) { return t.lrc && t.lrc.length; }).length;
   $('statLrc').textContent = '歌词 ' + lrcCount;
+  var localN = state.tracks.filter(function (t) { return trackKind(t) === 'local'; }).length;
+  var tc = $('trackListCount');
+  if (tc) tc.textContent = '共 ' + state.tracks.length + ' 首 · 本地 ' + localN + ' / 在线 ' + (state.tracks.length - localN);
+  var ab = $('advancedBadge');
+  if (ab) {
+    var badges = [];
+    if (state.neteaseCookie || state.qqCookie) badges.push('已登录');
+    var plN = (state.playlists && state.playlists.length) || 0;
+    if (plN) badges.push(plN + ' 个歌单');
+    ab.textContent = badges.join(' · ');
+  }
   renderPreflight();
 }
 /* ================= 演出预检 ================= */
@@ -2876,7 +3055,10 @@ function renderPreflight() {
   var el = $('preflight');
   if (!el) return;
   var html = '<div class="pf-head"><span class="pf-title">🎬 演出预检</span>'
-    + '<button type="button" id="btnPreflightRefresh" class="pf-refresh">🔄 重新检查</button></div>'
+    + (SERVER_MODE
+        ? '<button type="button" id="btnPreflightRefresh" class="pf-refresh">🔄 重新检查</button>'
+        : '<span class="pf-note" style="margin:0">免安装模式：仅统计当前环节</span>')
+    + '</div>'
     + '<div class="pf-grid">';
   MODE_KEYS.forEach(function (k) {
     var d = state.modeDefs[k];
@@ -2904,7 +3086,7 @@ function renderPreflight() {
       + '</div>';
   });
   html += '</div>';
-  html += '<div class="pf-note">红色表示该环节照片或音乐为空，请先在下方设置好再开始播放</div>';
+  html += '<div class="pf-note">红色表示该环节照片或音乐为空，请先设置好再开始播放。预检只核对数量，正式演出前请完整试播一遍。</div>';
   el.innerHTML = html;
   var rb = $('btnPreflightRefresh');
   if (rb) rb.addEventListener('click', refreshPreflight);
