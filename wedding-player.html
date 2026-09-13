@@ -926,16 +926,18 @@ function loadMusicDirFromServer(dirName, grp, defModes, remember, label) {
     audio.sort(function (a, b) { return naturalCmp({ name: a.split('/').pop() }, { name: b.split('/').pop() }); });
     state.tracks.forEach(function (t) { if (t.grp === grp) revokeTrackMedia(t); });
     state.tracks = state.tracks.filter(function (t) { return t.grp !== grp; });
-    // 防重复：与其它本地/服务器组里已存在的同名曲目去重（避免 33 首显示成 66 首）
-    var have = {};
+    // 防重复：只对「同一文件」（相同相对路径）去重，避免重复导入同一文件夹时翻倍。
+    // 注意不能按文件名去重：不同目录里常有同名歌曲（如 music/before 与 music/wedding 都有
+    // 同一首），按名去重会把仪式等环节的曲目误判为「已存在」而跳过，导致该环节队列为空。
+    var haveUrl = {};
     state.tracks.forEach(function (t) {
-      if ((t.source === 'local' || t.source === 'server')) have[t.name] = 1;
+      if ((t.source === 'local' || t.source === 'server') && t.url) haveUrl[t.url] = 1;
     });
     var dupN = 0;
     var list = [];
     audio.forEach(function (rel) {
       var n = rel.split('/').pop();
-      if (have[n]) { dupN++; return; }
+      if (haveUrl[rel]) { dupN++; return; }
       var mm = defModes
         ? { warmup: !!defModes.warmup, ceremony: !!defModes.ceremony, ending: !!defModes.ending }
         : { warmup: true, ceremony: true, ending: true };
