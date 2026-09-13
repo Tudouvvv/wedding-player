@@ -1,0 +1,24 @@
+# ===== 个人素材：不备份 =====
+photo/
+music/
+
+# 本地用户配置（含登录 Cookie / 本机路径）
+config.json
+
+# 打包好的可执行文件（体积大；源码见 server.cs / server.py）
+*.exe
+
+# 运行时下载的第三方工具（下载ffmpeg.bat 会自动获取）
+tools/
+
+# 内部协作文档（含本机绝对路径等）
+docs/
+
+# 转码脚本笔误残留 / 转码产物
+H.264)
+*.h264.mp4
+
+# 系统与编辑器
+Thumbs.db
+desktop.ini
+.DS_Store

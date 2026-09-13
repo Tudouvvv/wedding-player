@@ -1,0 +1,30 @@
+婚礼影音播放器本地服务（wedding-server.exe）重编译说明
+========================================================
+
+背景：2026-09 为支持「中文/空格文件名 + 音频 MIME」重编译了服务端。
+当前项目根目录：
+  wedding-server.exe          新：.NET 8 自包含单文件（约 34 MB），任意 Win10/11 无需装 .NET，U 盘拷贝即用
+  wedding-server-legacy.exe   旧：.NET Framework 4.x 版备份（约 28 KB，不支持中文/空格文件名与音频 MIME）
+
+改动内容（相对旧版）：
+  1) 静态文件路径增加 URL 解码（Uri.UnescapeDataString），否则中文/空格文件名请求全部 404
+  2) 静态文件 Mime() 增加音频类型（mp3/wav/ogg/opus/flac/m4a/aac）与 .lrc
+  3) 去掉 System.Web.Script.Serialization（仅 .NET Framework 有），config.json 保存改为内置 JsonCompact+FormatJson
+
+如何重编译（需要网络下载一次 SDK，仅开发机执行）：
+  1) 安装 .NET 8 SDK（如 https://dot.net/v1/dotnet-install.ps1，-Channel 8.0）
+  2) 在本目录执行：
+       dotnet publish server-build.csproj -c Release -r win-x64 --self-contained true `
+         -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -o out
+     注：若公司网络对 nuget.org TLS 拦截（本机曾遇到），需先把以下 5 个 nupkg 放到本地文件夹 offline/，
+         再用 -p:RestoreSources=<offline 路径> 离线还原：
+         microsoft.netcore.app.runtime.win-x64.8.0.30.nupkg
+         microsoft.netcore.app.host.win-x64.8.0.30.nupkg
+         microsoft.net.illink.tasks.8.0.30.nupkg
+         microsoft.aspnetcore.app.runtime.win-x64.8.0.30.nupkg
+         microsoft.windowsdesktop.app.runtime.win-x64.8.0.30.nupkg
+     还可用环境变量把 dotnet 的配置目录重定向到本目录，避免写用户目录被权限拦截：
+       $env:DOTNET_CLI_HOME、$env:NUGET_PACKAGES、$env:APPDATA/$env:LOCALAPPDATA
+  3) 编译完成后把 out\wedding-server.exe 复制到项目根目录（旧版先备份）。
+
+验证：启动后请求 /wedding-player.html 与含中文/空格的素材 URL 均返回 200，音频 Content-Type 为 audio/xxx。

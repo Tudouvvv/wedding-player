@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>wedding-server</AssemblyName>
+    <RootNamespace>WeddingServer</RootNamespace>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- 发布为自包含单文件 exe：拷到任意 Win10 或 Win11 的 U 盘电脑上无需安装 .NET 即可运行（构建命令见本目录 README） -->
+  <ItemGroup>
+    <Compile Include="..\server.cs" Link="server.cs" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,3214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>欢迎参加我们的婚礼🎉</title>
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: #0b0b10; color: #f2f2f7;
+  font-family: "幼圆", "YouYuan", "微软雅黑", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  font-weight: 600;
+  overflow: hidden; user-select: none; -webkit-user-select: none;
+}
+.hidden { display: none !important; }
+.hint { color: #8f8f9e; font-size: 12px; margin-top: 8px; line-height: 1.8; }
+.screen { position: fixed; inset: 0; }
+
+/* ===== 设置页 ===== */
+#screenSetup { overflow-y: auto; padding: 26px 20px 40px; }
+.setup-head { text-align: center; margin-bottom: 8px; }
+.mode-banner {
+  max-width: 1180px; margin: 12px auto 0; padding: 10px 16px;
+  border-radius: 10px; font-size: 13px; text-align: center;
+  border: 1px solid transparent;
+}
+.mode-banner.ok { background: #10241a; border-color: #2d6a4f; color: #9ecb8a; }
+.mode-banner.warn { background: #2a2413; border-color: #6b5c1e; color: #e8b85a; }
+.setup-head h1 {
+  font-family: "幼圆", "YouYuan", "楷体", "KaiTi", sans-serif;
+  font-size: 40px; color: #f5dd9d; letter-spacing: 2px; margin-bottom: 6px;
+  text-shadow: 0 2px 12px rgba(232,200,106,.25);
+}
+.sub { color: #bdbdcc; font-size: 15px; font-family: "幼圆", "YouYuan", "楷体", "KaiTi", sans-serif; }
+.setup-grid {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px;
+  max-width: 1180px; margin: 22px auto 0;
+}
+@media (max-width: 900px) { .setup-grid { grid-template-columns: 1fr; } }
+.card {
+  background: #14141b; border: 1px solid #26262f; border-radius: 14px;
+  padding: 18px 20px; align-self: start;
+}
+.card h2 { font-size: 17px; color: #e8c86a; margin-bottom: 14px; }
+.card h3 { font-size: 14px; color: #d6d6e2; margin: 18px 0 8px; }
+.dropzone {
+  border: 2px dashed #3a3a48; border-radius: 12px; padding: 30px 18px;
+  text-align: center; cursor: pointer; transition: all .2s;
+}
+.dropzone p { font-size: 15px; color: #dcdce8; }
+.dropzone:hover, .dropzone.drag { border-color: #e8c86a; background: #1a1a23; }
+.fallback-pick {
+  display: inline-block; margin-top: 10px; padding: 6px 12px;
+  background: #1a1a23; border: 1px dashed #4a4a58; border-radius: 8px;
+  color: #b0b0be; font-size: 12px; cursor: pointer; transition: all .2s;
+}
+.fallback-pick:hover { border-color: #e8c86a; color: #e8c86a; }
+.fallback-pick.flash { border-color: #e8c86a; color: #e8c86a; background: #2a2413; box-shadow: 0 0 12px rgba(232,200,106,.4); }
+.stats { display: flex; gap: 16px; margin-top: 12px; color: #ababb9; font-size: 13px; flex-wrap: wrap; }
+.status { margin-top: 10px; color: #9ecb8a; font-size: 13px; }
+input[type="text"], input[type="url"], select, textarea {
+  background: #0f0f15; border: 1px solid #2c2c38; color: #e8e8ee;
+  border-radius: 8px; padding: 8px 10px; font-size: 14px; outline: none;
+  width: 100%; font-family: inherit;
+}
+input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
+.online-add { display: flex; gap: 8px; margin-top: 10px; }
+.online-add input { flex: 1; }
+.btn {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+  color: #f0f0f5; border-radius: 8px; padding: 8px 16px; font-size: 14px;
+  cursor: pointer; white-space: nowrap; font-family: inherit;
+}
+.btn:hover { background: rgba(232,200,106,.18); border-color: #e8c86a; }
+.track {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 9px 4px; border-bottom: 1px solid #23232c; flex-wrap: wrap;
+}
+.track-name { font-size: 14px; color: #ececf3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46%; }
+.track-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.tag { font-size: 11px; padding: 1px 8px; border-radius: 20px; margin-left: 8px; }
+.tag.online { background: #222c3a; color: #8ec7ff; }
+.tag.local { background: #262418; color: #d4b95e; }
+.tag.playlist { background: #2c2413; color: #e8c86a; }
+.chip {
+  background: #23232c; color: #b0b0be; border: 1px solid #33333f;
+  border-radius: 20px; padding: 2px 11px; font-size: 12px; cursor: pointer;
+}
+.chip.on { background: #3a3418; color: #e8c86a; border-color: #6b5c1e; }
+.mini {
+  background: none; border: 1px solid #33333f; color: #c9c9d6;
+  border-radius: 8px; padding: 2px 9px; font-size: 12px; cursor: pointer;
+}
+.mini:hover { border-color: #e8c86a; color: #e8c86a; }
+.mini.danger:hover { border-color: #e08a8a; color: #e08a8a; }
+.mode-card {
+  border: 1px solid #26262f; border-radius: 12px; padding: 14px 16px;
+  margin-bottom: 14px; background: #121218;
+}
+.mode-card h3 { font-size: 15px; margin: 0 0 4px; color: #e8c86a; }
+.mode-card label { display: block; font-size: 13px; color: #ababb9; margin: 12px 0 5px; }
+.mode-card input[type="range"] { width: 100%; accent-color: #e8c86a; cursor: pointer; }
+.mode-card input[type="text"], .mode-card select { width: 100%; box-sizing: border-box; }
+.mode-card select { background: #1c1c25; color: #ececf3; border: 1px solid #33333f; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; }
+.mode-card .val { color: #e8c86a; font-weight: 600; }
+.mode-card .check { display: flex; align-items: center; gap: 7px; margin-top: 10px; }
+.mode-card .check input { width: auto; accent-color: #e8c86a; }
+.chip-group { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 2px; }
+.row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.row label { color: #ababb9; font-size: 13px; }
+.row select { width: 220px; }
+.start-bar { max-width: 1180px; margin: 26px auto 0; text-align: center; }
+.primary {
+  background: linear-gradient(135deg, #e8c86a, #c9a227); color: #1a1405;
+  border: none; border-radius: 30px; padding: 14px 48px; font-size: 18px;
+  font-weight: bold; cursor: pointer; font-family: inherit;
+  box-shadow: 0 6px 26px rgba(232,200,106,.25);
+}
+.primary:hover { filter: brightness(1.08); }
+
+/* ===== 播放页 ===== */
+#screenPlayer { background: #000; }
+#stage { position: absolute; inset: 0; overflow: hidden; }
+.layer { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; z-index: 1; will-change: opacity; }
+.layer.show { opacity: 1; }
+.layer img, .layer video { width: 100%; height: 100%; object-fit: contain; will-change: transform, opacity, filter; background: #000; }
+.layer.is-video img { display: none; }
+.layer.is-photo video { display: none; }
+.transition-kenburns img { animation: kenburns var(--kdur, 8s) linear forwards; }
+.transition-zoomfade img { animation: zoomfade 3.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.transition-slide img { animation: slidein 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.transition-blur img { animation: blurin 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.transition-flip img { animation: flipin 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.transition-flip { perspective: 1200px; }
+.transition-circle img { animation: circlein 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.transition-coverflow img { animation: coverin 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.transition-coverflow { perspective: 1400px; }
+@keyframes kenburns { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.12) translate(1.5%, -1%); } }
+@keyframes zoomfade { from { transform: scale(1.12); opacity: .4; } to { transform: scale(1); opacity: 1; } }
+@keyframes slidein { from { transform: translateX(8%) scale(1.05); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes blurin { from { transform: scale(1.06); filter: blur(14px); opacity: 0; } to { transform: scale(1); filter: blur(0); opacity: 1; } }
+@keyframes flipin { from { transform: rotateY(85deg) scale(.92); opacity: 0; } to { transform: rotateY(0) scale(1); opacity: 1; } }
+@keyframes circlein { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(80% at 50% 50%); } }
+@keyframes coverin { from { transform: perspective(1400px) rotateY(-28deg) scale(.9); opacity: 0; } to { transform: perspective(1400px) rotateY(0) scale(1); opacity: 1; } }
+.vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55));
+}
+#particles { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+#modeOverlay {
+  position: absolute; top: 9%; left: 0; right: 0; text-align: center; z-index: 4;
+  font-family: "楷体", "KaiTi", "幼圆", "YouYuan", serif;
+  font-size: clamp(28px, 5vw, 56px); color: #f7ead0;
+  text-shadow: 0 2px 18px rgba(0,0,0,.7); letter-spacing: 6px;
+  opacity: 0; transition: opacity 1.4s; pointer-events: none;
+}
+#modeOverlay.show { opacity: 1; }
+#lyricsPanel {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: 100px;
+  width: min(72%, 960px); pointer-events: none; z-index: 4;
+}
+#lyricsBox { max-height: 34vh; overflow: hidden; text-align: center; }
+.lrc-line {
+  color: rgba(240,240,245,.5); font-size: 19px; line-height: 1.9;
+  text-shadow: 0 1px 6px rgba(0,0,0,.8); transition: all .5s; position: relative;
+  display: none;
+}
+.lrc-line.active {
+  display: block;
+  color: #f5dd9d; font-size: 30px; font-weight: 600;
+  text-shadow: 0 0 22px rgba(232,200,106,.35);
+  animation: lrcPop .45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.lrc-orig { display: block; }
+.lrc-trans {
+  display: block; font-size: 1em; font-weight: 400; line-height: 1.5;
+  color: rgba(245,221,157,.82); margin-top: 2px;
+  text-shadow: 0 0 14px rgba(232,200,106,.2);
+}
+@keyframes lrcPop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+#topInfo {
+  position: absolute; top: 14px; left: 16px; display: flex; gap: 12px;
+  font-size: 13px; color: rgba(255,255,255,.88); opacity: 0;
+  transition: opacity .3s; pointer-events: none; align-items: center; z-index: 5;
+}
+#topInfo.show { opacity: 1; }
+#modeTag {
+  background: rgba(0,0,0,.45); padding: 4px 12px; border-radius: 20px;
+  border: 1px solid rgba(232,200,106,.4); color: #e8c86a;
+}
+#photoCounter { background: rgba(0,0,0,.45); padding: 4px 10px; border-radius: 20px; }
+#controls {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+  background: linear-gradient(transparent, rgba(0,0,0,.85));
+  padding: 30px 20px 14px; opacity: 0; transform: translateY(12px); transition: all .35s;
+}
+#controls.show { opacity: 1; transform: none; }
+#musicProgress {
+  height: 5px; background: rgba(255,255,255,.18); border-radius: 3px;
+  cursor: pointer; margin: 0 auto 10px; max-width: 1100px;
+}
+#musicBar {
+  height: 100%; width: 0; border-radius: 3px;
+  background: linear-gradient(90deg, #e8c86a, #f3e2b8);
+}
+.controls-row {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  max-width: 1150px; margin: 0 auto; flex-wrap: wrap;
+}
+.controls-row button {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+  color: #f0f0f5; border-radius: 12px; min-width: 44px; height: 40px;
+  font-size: 16px; cursor: pointer; transition: .2s; font-family: inherit;
+}
+.controls-row button:hover { background: rgba(232,200,106,.22); border-color: #e8c86a; }
+#btnMode { min-width: 120px; font-size: 14px; }
+#btnLyrics { font-size: 14px; }
+#btnLyrics.off { opacity: .45; }
+#btnShuffle.on { background: rgba(232,200,106,.22); border-color: #e8c86a; color: #e8c86a; }
+#trackName {
+  color: #e6e6ee; font-size: 14px; max-width: 240px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#musicTime { color: #ababb9; font-size: 12px; }
+.sep { width: 1px; height: 24px; background: rgba(255,255,255,.15); }
+#toast {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: 128px; z-index: 6;
+  background: rgba(20,20,28,.92); border: 1px solid rgba(232,200,106,.5); color: #f3e2b8;
+  padding: 10px 22px; border-radius: 24px; font-size: 14px; opacity: 0;
+  transition: opacity .3s; pointer-events: none; white-space: nowrap;
+}
+#toast.show { opacity: 1; }
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.62); z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-box {
+  background: #14141b; border: 1px solid #33333f; border-radius: 14px;
+  padding: 20px; width: min(92vw, 540px);
+}
+.modal-box h3 { margin-bottom: 12px; color: #e8c86a; font-size: 16px; }
+.modal-box textarea { width: 100%; resize: vertical; min-height: 200px; margin-bottom: 12px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-actions .btn { padding: 9px 20px; }
+#btnLrcSave {
+  background: linear-gradient(135deg, #e8c86a, #c9a227) !important;
+  color: #1a1405 !important; border: none !important; font-weight: bold;
+}
+
+/* ===== 演出预检 ===== */
+.preflight { max-width: 1180px; margin: 22px auto 0; }
+.preflight .pf-head { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+.preflight .pf-title { font-size: 15px; color: #e8c86a; }
+.preflight .pf-refresh {
+  background: none; border: 1px solid #33333f; color: #c9c9d6;
+  border-radius: 8px; padding: 3px 10px; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+.preflight .pf-refresh:hover { border-color: #e8c86a; color: #e8c86a; }
+.pf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 700px) { .pf-grid { grid-template-columns: 1fr; } }
+.pf-item { background: #121218; border: 1px solid #26262f; border-radius: 12px; padding: 12px 14px; text-align: left; }
+.pf-item.pf-bad { border-color: #7a3b3b; background: #1e1414; }
+.pf-name { color: #e8c86a; font-size: 14px; margin-bottom: 6px; }
+.pf-line { color: #c9c9d6; font-size: 13px; line-height: 1.7; }
+.pf-item.pf-bad .pf-line { color: #e8a0a0; }
+.pf-note { text-align: center; color: #8f8f9e; font-size: 12px; margin-top: 8px; }
+
+/* ===== 播放页界面锁定 ===== */
+#btnLock.on { background: rgba(232,200,106,.22); border-color: #e8c86a; color: #e8c86a; }
+#lockBadge {
+  position: absolute; top: 14px; right: 16px; z-index: 8;
+  background: rgba(0,0,0,.55); border: 1px solid rgba(232,200,106,.55); color: #e8c86a;
+  padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
+  font-family: inherit;
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 设置页 ================= -->
+<div id="screenSetup" class="screen">
+  <div class="setup-head">
+    <h1>欢迎参加我们的婚礼🎉</h1>
+    <p class="sub"></p>
+  </div>
+  <div id="modeBanner" class="mode-banner"></div>
+
+  <div class="setup-grid">
+    <section class="card">
+      <h2>① 素材（照片 / 音乐 / 歌词）</h2>
+      <div id="dropZone" class="dropzone">
+        <p>📁 点击选择素材文件夹</p>
+        <p class="hint">自动识别文件夹内的照片、音乐和 .lrc 歌词，或直接把整个文件夹拖到这里</p>
+      </div>
+      <input type="file" id="fileInputFolder" webkitdirectory multiple class="hidden">
+      <label for="fileInputFolder" id="fallbackPick" class="fallback-pick">🖼 没弹出选择窗口？点这里用系统窗口选文件夹（兼容模式）</label>
+      <div id="folderStatus" class="status hidden"></div>
+      <div class="stats">
+        <span id="statPhotos">照片 0</span>
+        <span id="statTracks">音乐 0</span>
+        <span id="statLrc">歌词 0</span>
+      </div>
+
+      <h3>💿 导入本地音乐（本地已下载的歌）</h3>
+      <div class="online-add">
+        <input id="musicImportDirName" type="text" readonly placeholder="尚未导入音乐文件夹">
+        <button id="btnPickMusicDir" class="btn">📁 导入音乐文件夹</button>
+        <button id="btnPickMusicFiles" class="btn">🎵 选择音乐文件</button>
+      </div>
+      <input type="file" id="fileInputMusicDir" webkitdirectory multiple class="hidden">
+      <input type="file" id="fileInputMusicFiles" accept="audio/*,.mp3,.wav,.ogg,.flac,.m4a,.aac,.opus,.mgg,.mflac,.ncm,.qmcflac,.qmcogg" multiple class="hidden">
+      <div id="musicImportStatus" class="status hidden"></div>
+      <p class="hint">与照片素材文件夹互不影响：本地服务模式下「📁 导入音乐文件夹」选择程序目录内的音乐文件夹（如 music/仪式），重启后自动重新加载；音乐文件名支持中文/空格（需配合新版 wedding-server.exe）。「🎵 选择音乐文件」可多选任意位置的音频（浏览器方式，当次会话有效）。QQ音乐/网易云 VIP 下载的 <b>.mgg/.mflac/.ncm</b> 是加密专属格式，无法直接播放 —— 请先用「音钥 MusicKey」等解锁工具转成 mp3/ogg/flac 后再导入。</p>
+
+      <h3>🎵 在线音乐（直链）</h3>
+      <div class="online-add">
+        <input id="onlineName" type="text" placeholder="曲名（可留空）">
+        <input id="onlineUrl" type="url" placeholder="https://.../song.mp3 直链">
+        <button id="btnAddOnline" class="btn">添加</button>
+      </div>
+      <p class="hint">直链需为可直接播放的音频地址；每首歌可点“🎼 歌词”粘贴 LRC 歌词。支持格式：jpg / png / webp / gif / bmp / avif 照片，mp3 / wav / ogg / flac / m4a / aac / opus 音乐。</p>
+
+      <h3>📃 歌单导入（QQ音乐 / 网易云）</h3>
+      <div class="online-add">
+        <input id="playlistUrl" type="url" placeholder="粘贴歌单链接，如 music.163.com/playlist?id=...">
+        <button id="btnImportPlaylist" class="btn">导入歌单</button>
+      </div>
+      <div id="importStatus" class="status hidden"></div>
+      <details style="margin-top:10px">
+        <summary style="cursor:pointer;font-size:13px;color:#b0b0be">或：粘贴歌单文本（一行一首：歌名 - 歌手）</summary>
+        <div style="margin-top:8px">
+          <textarea id="playlistText" rows="4" placeholder="一行一首，如：&#10;体面 - 于文文&#10;晴天 - 周杰伦"></textarea>
+          <div style="margin-top:8px"><button id="btnImportText" class="btn">匹配并导入</button></div>
+        </div>
+      </details>
+      <div class="row" style="margin-top:12px">
+        <label for="neteaseCookie" style="white-space:nowrap">🎫 网易云Cookie（可选）</label>
+        <input type="text" id="neteaseCookie" placeholder="粘贴 MUSIC_U=xxx 或扫码登录">
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button id="btnQrLogin" class="btn">📱 扫码登录（推荐）</button>
+        <button id="btnLogout" class="btn">退出登录</button>
+        <span class="hint" style="margin:0">扫码登录后 VIP 歌曲可完整播放</span>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <label for="qqCookie" style="white-space:nowrap">🎫 QQ音乐Cookie（可选）</label>
+        <input type="text" id="qqCookie" placeholder="粘贴 y.qq.com 的 Cookie">
+      </div>
+      <div id="qqCookieStatus" style="font-size:12px;margin-top:6px;color:#9a9aa6">未填写（QQ源需用「启动播放器.bat」本地服务模式才生效）</div>
+      <p class="hint">QQ音乐免费歌曲无需登录即可完整播放。想完整播放 VIP 歌曲：登录 y.qq.com 后获取 Cookie 粘贴到这里（需含 uin 与 qqmusic_key 或 qm_keyst）。</p>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer;font-size:13px;color:#9a9aa6">📖 点击查看：如何获取 QQ音乐 Cookie（三种方法）</summary>
+        <div style="margin-top:8px;font-size:13px;color:#c9c9d6;line-height:1.9">
+          <b>方法一（最稳，不用插件）：</b><br>
+          1. 打开 y.qq.com 并登录（右上角有头像才算登录成功）<br>
+          2. 按 F12 → 点「应用 Application」标签<br>
+          3. 左侧展开「Cookie」→ 点 https://y.qq.com<br>
+          4. 右侧表格里找到 <b>uin</b> 和 <b>qqmusic_key</b>（或 qm_keyst）两行<br>
+          5. 双击值复制，粘贴成这种格式：<br>
+          &nbsp;&nbsp;<span style="color:#e8c86a">uin=o123456789; qqmusic_key=xxxxxxxx</span><br><br>
+          <b>方法二（Cookie Editor 插件，一键复制全部）：</b><br>
+          1. 浏览器装「Cookie Editor」扩展（应用商店搜）<br>
+          2. 打开 y.qq.com 并登录 → 点插件图标 → 点 Copy → 全部粘贴<br><br>
+          <b>方法三（F12 网络请求）：</b><br>
+          1. F12 → 「网络 Network」→ 确认左上角过滤框是「全部」状态<br>
+          2. 按 Ctrl+F5 强制刷新<br>
+          3. 找到<b>名称 y.qq.com、类型 document</b>的请求（不是 stat6.y.qq.com 统计请求）<br>
+          4. 「标头 Headers」→「请求标头」→ 复制 Cookie: 整行值
+        </div>
+      </details>
+      <p class="hint">在浏览器打开 music.163.com 并登录 → F12 → 应用(Application) → Cookie → 复制 MUSIC_U=... 粘贴到这里，VIP 歌曲即可完整播放（仅保存在本机）。<br><span id="apiMode"></span><br>歌单导入需联网。QQ / 网易云歌单直接使用对应平台的播放源；用「启动播放器.bat」启动更稳定。</p>
+
+      <h3>🎵 音乐列表（本地 + 在线 + 歌单）</h3>
+      <div id="trackList"></div>
+    </section>
+
+    <section class="card">
+      <h2>② 三种环节模式</h2>
+      <div id="modeCards"></div>
+      <div class="row">
+        <label>照片填充方式</label>
+        <select id="coverSelect">
+          <option value="contain">适应屏幕（不裁剪，适合人像）</option>
+          <option value="cover">铺满屏幕（16:9 横图效果更佳）</option>
+        </select>
+      </div>
+    </section>
+  </div>
+
+  <div id="preflight" class="preflight"></div>
+
+  <div class="start-bar">
+    <button id="btnStart" class="primary">▶ 开始播放</button>
+    <p class="hint" style="margin-top:12px">推荐双击「启动播放器.bat」启动（歌单导入更稳定）；直接双击本文件也可用。演出时把窗口拖到投影仪屏幕，按 F 全屏，按 M 切换环节。</p>
+  </div>
+</div>
+
+<!-- ================= 播放页 ================= -->
+<div id="screenPlayer" class="screen hidden">
+  <div id="stage">
+    <div class="layer" id="layer0"><img alt=""><video playsinline muted></video></div>
+    <div class="layer" id="layer1"><img alt=""><video playsinline muted></video></div>
+    <div class="vignette"></div>
+    <div id="particles"></div>
+    <div id="modeOverlay"></div>
+  </div>
+
+  <div id="lyricsPanel" class="hidden">
+    <div id="lyricsBox"></div>
+  </div>
+
+  <div id="topInfo">
+    <span id="modeTag">🎉 热场</span>
+    <span id="photoCounter">0 / 0</span>
+  </div>
+
+  <div id="controls">
+    <div id="musicProgress"><div id="musicBar"></div></div>
+    <div class="controls-row">
+      <button id="btnSetup" title="返回设置">⚙</button>
+      <button id="btnMode" title="切换模式（M）">模式：热场</button>
+      <span class="sep"></span>
+      <button id="btnPrevTrack" title="上一首（音乐）">⏮</button>
+      <button id="btnPlayPause" title="音乐播放/暂停（空格）">▶</button>
+      <button id="btnNextTrack" title="下一首（N）">⏭</button>
+      <button id="btnShuffle" title="随机播放（S）">🔀</button>
+      <span id="trackName">未播放</span>
+      <span id="musicTime">--:--</span>
+      <span class="sep"></span>
+      <button id="btnPrevPhoto" title="上一张照片（←）">◀</button>
+      <button id="btnPhotoPause" title="暂停/继续轮播（P）">Ⅱ</button>
+      <button id="btnNextPhoto" title="下一张照片（→）">▶</button>
+      <span class="sep"></span>
+      <button id="btnLyrics" title="歌词开关（L）">🎼 歌词</button>
+      <button id="btnFullscreen" title="全屏（F）">⛶</button>
+      <button id="btnLock" title="锁定界面，防止投影时误触">🔒</button>
+    </div>
+  </div>
+
+  <div id="lockBadge" class="hidden">🔒 已锁定 · 点击解锁</div>
+  <div id="toast"></div>
+</div>
+
+<!-- ================= 网易云扫码登录弹窗 ================= -->
+<div id="qrModal" class="modal hidden">
+  <div class="modal-box" style="text-align:center">
+    <h3>📱 网易云扫码登录</h3>
+    <img id="qrImg" width="260" height="260" style="background:#fff;padding:8px;border-radius:8px" alt="二维码">
+    <p id="qrStatus" style="color:#9a9aa6;margin-top:10px">正在获取二维码…</p>
+    <div class="modal-actions" style="justify-content:center">
+      <button id="btnQrClose" class="btn">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 歌词粘贴弹窗 ================= -->
+<div id="lrcModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>🎼 粘贴 LRC 歌词</h3>
+    <textarea id="lrcText" placeholder="[00:00.00] 第一行歌词&#10;[00:05.00] 第二行歌词&#10;[00:10.50] 第三行歌词"></textarea>
+    <div class="modal-actions">
+      <button id="btnLrcSave" class="btn">保存</button>
+      <button id="btnLrcCancel" class="btn">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 素材/音乐文件夹选择弹窗 ================= -->
+<div id="dirModal" class="modal hidden">
+  <div class="modal-box">
+    <h3 id="dirModalTitle">📁 选择素材文件夹</h3>
+    <p id="dirModalHint" style="font-size:12px;color:#9a9aa6;margin-bottom:8px">选择程序目录下的文件夹（可进入子文件夹）</p>
+    <div id="dirBreadcrumb" style="font-size:13px;color:#e8c86a;margin-bottom:8px;word-break:break-all"></div>
+    <div id="dirList" style="max-height:300px;overflow-y:auto;border:1px solid #2c2c38;border-radius:8px;padding:6px"></div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button id="btnDirUseDefault" class="btn">使用上方素材（清空）</button>
+      <button id="btnDirCancel" class="btn">取消</button>
+    </div>
+  </div>
+</div>
+
+<script src="tsparticles.min.js"></script>
+<script>
+(function () {
+"use strict";
+
+/* ================= 工具 ================= */
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function uid() { return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function shuffleArr(a) {
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function basenameNoExt(n) { return String(n).replace(/\.[^.]+$/, ''); }
+function naturalCmp(a, b) {
+  var pa = String(a.name).replace(/(\d+)/g, function (m) { return ('0000000000' + m).slice(-10); });
+  var pb = String(b.name).replace(/(\d+)/g, function (m) { return ('0000000000' + m).slice(-10); });
+  return pa.localeCompare(pb);
+}
+/* 文本编码自动识别：.lrc 常用 GBK/GB2312(ANSI) 保存，先按 UTF-8 严格解码，失败再按 GBK 回退，避免中文乱码 */
+function bytesToString(u8) {
+  if (typeof TextDecoder !== 'undefined') {
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(u8); } catch (e) {}
+    try { return new TextDecoder('gbk').decode(u8); } catch (e2) {}
+    try { return new TextDecoder('gb18030').decode(u8); } catch (e3) {}
+    try { return new TextDecoder('utf-8').decode(u8); } catch (e4) {}
+  }
+  // 极老浏览器无 TextDecoder：按 UTF-8 解码（同旧行为）
+  var s = '';
+  for (var i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+  try { return decodeURIComponent(escape(s)); } catch (e) { return s; }
+}
+function fileToText(blobLike) {
+  return blobLike.arrayBuffer().then(function (ab) { return bytesToString(new Uint8Array(ab)); });
+}
+var toastTimer = null;
+function toast(msg) {
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+}
+function fmt(s) {
+  s = Math.floor(s || 0);
+  var m = Math.floor(s / 60), ss = s % 60;
+  return (m < 10 ? '0' : '') + m + ':' + (ss < 10 ? '0' : '') + ss;
+}
+
+/* ================= 状态 ================= */
+var MODE_KEYS = ['warmup', 'ceremony', 'ending'];
+var state = {
+  photos: [],
+  tracks: [],
+  cover: 'contain',
+  currentMode: 'warmup',
+  modeDefs: {
+    warmup:   { key: 'warmup',   name: '热场', icon: '🎉', photoDur: 4, transitions: ['fade', 'zoomfade', 'slide'], particlesList: ['confetti', 'heart'], transition: 'fade', particles: 'confetti', overlay: '', lyrics: true, photoShuffle: false, shuffle: true },
+    ceremony: { key: 'ceremony', name: '仪式', icon: '', photoDur: 8, transitions: ['kenburns', 'blur', 'coverflow'], particlesList: ['star', 'gold'], transition: 'kenburns', particles: 'star', overlay: '', lyrics: true, photoShuffle: false, shuffle: true },
+    ending:   { key: 'ending',   name: '尾声', icon: '🎊', photoDur: 6, transitions: ['zoomfade', 'flip', 'circle'], particlesList: ['heart', 'petal', 'balloon'], transition: 'zoomfade', particles: 'heart', overlay: '', lyrics: true, photoShuffle: false, shuffle: true }
+  },
+  photoIndex: 0,
+  photoPaused: false,
+  photoTimer: null,
+  photoOrder: null,       // 照片随机播放时：当前环节的照片顺序（存原数组下标）；null = 顺序播放
+  photoOrderMode: '',     // 当前 photoOrder 属于哪个环节
+  activeLayer: 0,
+  audio: null,
+  queue: [],
+  trackIndex: -1,
+  lrc: null,
+  lrcEls: null,
+  activeLrc: -1,
+  lyricsOn: true,
+  neteaseCookie: '',
+  qqCookie: '',
+  qrKey: null,
+  qrTimer: null,
+  controlsTimer: null,
+  dirHandle: null,
+  lrcEditId: null,
+  playlists: [],
+  modeDirs: { warmup: '', ceremony: '', ending: '' },
+  modePlaylists: { warmup: '', ceremony: '', ending: '' },
+  // 每个环节的音乐来源：all（全部）/ playlist（歌单）/ local（本地）
+  modeMusicSource: { warmup: 'all', ceremony: 'all', ending: 'all' },
+  // 每个环节专属的本地音乐文件夹（程序目录内相对路径，仅本地服务模式持久）
+  modeLocalDirs: { warmup: '', ceremony: '', ending: '' },
+  // 已记忆的本地音乐文件夹（程序目录内相对路径，仅本地服务模式）
+  localMusicDirs: [],
+  genericDir: '',
+  musicPlaying: false,
+  uiLocked: false
+};
+var els = { layers: [$('layer0'), $('layer1')] };
+
+/* ================= LRC 解析 ================= */
+function parseLRC(text, transText) {
+  var out = [];
+  var build = function (src) {
+    var arr = [];
+    if (!src) return arr;
+    var lines = String(src).split(String.fromCharCode(10));
+    var re = /\[(\d{1,2}):(\d{1,2})(?:[.:](\d{1,3}))?\]/g;
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].replace(String.fromCharCode(13), '');
+      var times = [], m;
+      re.lastIndex = 0;
+      while ((m = re.exec(line)) !== null) {
+        var frac = m[3] ? (m[3] + '00').slice(0, 3) : '000';
+        times.push(parseInt(m[1], 10) * 60 + parseInt(m[2], 10) + parseInt(frac, 10) / 1000);
+      }
+      if (!times.length) continue;
+      var txt = line.replace(re, '').trim();
+      for (var j = 0; j < times.length; j++) arr.push({ t: times[j], text: txt });
+    }
+    arr.sort(function (a, b) { return a.t - b.t; });
+    return arr;
+  };
+  var main = build(text);
+  var trans = build(transText);
+  if (!trans.length) return main;
+  // 合并：翻译行按时间轴对齐到原文行
+  var META_RE = /^(作词|作曲|编曲|制作人|制作|混音|录音|监制|和声|演唱|原唱|翻唱|词|曲|出品|OP|SP)\s*[:：]/;
+  var TRANSPLACE_RE = /^(以下歌词翻译由|本翻译由|QQ音乐享有本翻译作品的著作权|TME享有本翻译作品的著作权|翻译.*提供|\/+$)/;
+  var ti = 0;
+  for (var k = 0; k < main.length; k++) {
+    if (META_RE.test(main[k].text) || main[k].text.length > 80) continue;
+    while (ti < trans.length && trans[ti].t < main[k].t - 0.05) ti++;
+    if (ti < trans.length && Math.abs(trans[ti].t - main[k].t) < 1.0) {
+      var tt = trans[ti].text;
+      if (tt && tt !== main[k].text && !META_RE.test(tt) && !TRANSPLACE_RE.test(tt)) main[k].trans = tt;
+    }
+  }
+  return main;
+}
+
+/* ================= 素材读取 ================= */
+var PHOTO_RE = /\.(jpe?g|png|webp|gif|bmp|avif)$/i;
+var VIDEO_RE = /\.(mp4|webm|mov|m4v)$/i;
+var AUDIO_RE = /\.(mp3|wav|ogg|flac|m4a|aac|opus)$/i;
+var LRC_RE = /\.lrc$/i;
+
+function ingestFiles(fileList) {
+  if (fileList && fileList.length && !state.photoDirName) {
+    var rel = fileList[0].webkitRelativePath || '';
+    if (rel) { state.photoDirName = rel.split('/')[0]; scheduleConfigSave(); }
+  }
+  var photos = [], videos = [], tracks = [], lrcs = [];
+  for (var i = 0; i < fileList.length; i++) {
+    var f = fileList[i], n = f.name || '';
+    if (PHOTO_RE.test(n)) photos.push(f);
+    else if (VIDEO_RE.test(n)) videos.push(f);
+    else if (AUDIO_RE.test(n)) tracks.push(f);
+    else if (LRC_RE.test(n)) lrcs.push(f);
+  }
+  photos.sort(naturalCmp);
+  videos.sort(naturalCmp);
+  tracks.sort(naturalCmp);
+  lrcs.sort(naturalCmp);
+
+  // 照片 + 视频（重建，混合轮播）
+  state.photos.forEach(function (p) { if (p.url && p.url.indexOf('blob:') === 0) URL.revokeObjectURL(p.url); });
+  var mixed = photos.map(function (f) { return { name: f.name, url: URL.createObjectURL(f), type: 'image' }; })
+    .concat(videos.map(function (f) { return { name: f.name, url: URL.createObjectURL(f), type: 'video' }; }));
+  mixed.sort(function (a, b) { return naturalCmp({ name: a.name }, { name: b.name }); });
+  state.photos = mixed;
+
+  // 本地音乐：重建「素材扫描组」，保留手动/单独导入的本地音乐与歌单/在线曲目
+  state.tracks.forEach(function (t) { if (isMediaGroup(t)) revokeTrackMedia(t); });
+  var kept = state.tracks.filter(function (t) { return !isMediaGroup(t); });
+  var localTracks = tracks.map(function (f) {
+    return { id: uid(), name: f.name, url: URL.createObjectURL(f), source: 'local', grp: 'media', lrc: null, lrcRaw: '', modes: { warmup: true, ceremony: true, ending: true } };
+  });
+  state.tracks = kept.concat(localTracks);
+
+  updateStats();
+  renderTrackList();
+  $('folderStatus').classList.remove('hidden');
+  $('folderStatus').textContent = '已加载：' + state.photos.length + ' 张照片，' + state.tracks.length + ' 首音乐';
+
+  // 异步匹配同名 .lrc 歌词
+  var tasks = lrcs.map(function (f) {
+    return fileToText(f).then(function (txt) { return { key: basenameNoExt(f.name).toLowerCase(), text: txt }; }).catch(function () { return null; });
+  });
+  Promise.all(tasks).then(function (entries) {
+    var pool = {};
+    entries.forEach(function (e) { if (e) pool[e.key] = e.text; });
+    var matched = 0;
+    state.tracks.forEach(function (t) {
+      if (t.source === 'local' && t.grp === 'media') {
+        var k = basenameNoExt(t.name).toLowerCase();
+        if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+      }
+    });
+    if (matched) toast('已自动匹配 ' + matched + ' 首歌词');
+    updateStats();
+    renderTrackList();
+  });
+}
+
+/* ================= 本地音乐导入 ================= */
+// 加密专属格式（QQ音乐 musicex / 网易云 ncm 等）：浏览器无法播放，需先解锁转码
+var ENCRYPTED_RE = /\.(mgg|mflac|ncm|qmc0|qmc3|qmc4|qmc6|qmc8|qmcflac|qmcogg|tkm|kgm|kgma|vpr)$/i;
+// 素材文件夹扫描出来的本地音乐组（重新选文件夹时整体重建）
+function isMediaGroup(t) {
+  if (t.grp === 'media') return true;
+  return (t.grp == null) && (t.source === 'local' || t.source === 'server');
+}
+// 歌曲归属：playlist（歌单在线歌曲）/ online（在线直链）/ local（本地）
+function trackKind(t) {
+  if (t.source === 'online') return (t.origin === 'playlist') ? 'playlist' : 'online';
+  return 'local';
+}
+function setMusicImportStatus(msg, isErr) {
+  var el = $('musicImportStatus');
+  if (!el) return;
+  el.classList.remove('hidden');
+  el.style.color = isErr ? '#e08a8a' : '#9ecb8a';
+  el.textContent = msg;
+}
+function encNotice(enc) {
+  return enc ? ('（另有 ' + enc + ' 个加密文件 .mgg/.mflac/.ncm 等无法直接播放：请先用「音钥 MusicKey」等工具解锁转成 mp3/ogg/flac 后再导入）') : '';
+}
+// 浏览器模式：整文件夹导入（含子文件夹）；重复导入同一文件夹时替换该文件夹之前的曲目
+// modeKey：指定导入给哪个环节（该文件夹歌曲默认只在该环节播放）
+function importMusicFolderFiles(fileList, modeKey) {
+  if (!fileList || !fileList.length) return;
+  var token = '';
+  var rel = fileList[0].webkitRelativePath || '';
+  token = rel ? rel.split('/')[0] : ('_dir_' + Date.now().toString(36));
+  addLocalMusicFiles(fileList, token, modeKey);
+}
+// 浏览器模式：把本地音频文件加入音乐列表。replaceToken 为字符串 = 文件夹重导（替换同 token）；
+// replaceToken 为 null = 普通追加（跳过同名同大小的重复文件）；modeKey：限定到某个环节
+function addLocalMusicFiles(fileList, replaceToken, modeKey) {
+  if (!fileList || !fileList.length) { toast('未选择音乐文件'); return; }
+  var audios = [], lrcs = [], enc = 0;
+  for (var i = 0; i < fileList.length; i++) {
+    var f = fileList[i], n = f.name || '';
+    if (AUDIO_RE.test(n)) audios.push(f);
+    else if (LRC_RE.test(n)) lrcs.push(f);
+    else if (ENCRYPTED_RE.test(n)) enc++;
+  }
+  if (!audios.length) {
+    setMusicImportStatus(enc
+      ? ('未导入：检测到 ' + enc + ' 个加密音乐文件（.mgg/.mflac/.ncm 等）。这类 QQ音乐/网易云 VIP 专属格式无法直接播放，请先用「音钥 MusicKey」等解锁工具转成 mp3 / ogg / flac 后再导入。')
+      : '所选内容中没有可播放的音乐文件（支持 mp3 / wav / ogg / flac / m4a / aac / opus）', true);
+    return;
+  }
+  if (typeof replaceToken === 'string') {
+    state.tracks = state.tracks.filter(function (t) {
+      if (t.grp !== 'manual' || t.srcDir !== replaceToken || (modeKey && t.srcMode !== modeKey)) return true;
+      if (t.url && t.url.indexOf('blob:') === 0) URL.revokeObjectURL(t.url);
+      return false;
+    });
+  }
+  var added = 0, dups = 0;
+  var defModes = modeKey
+    ? { warmup: modeKey === 'warmup', ceremony: modeKey === 'ceremony', ending: modeKey === 'ending' }
+    : null;
+  audios.forEach(function (f) {
+    var size = f.size || 0;
+    if (replaceToken == null && state.tracks.some(function (t) { return (t.source === 'local' || t.source === 'server') && t.name === f.name && (t._size === size || !t._size); })) { dups++; return; }
+    var srcDir = '';
+    if (f.webkitRelativePath) srcDir = f.webkitRelativePath.split('/')[0];
+    var mm = defModes ? { warmup: defModes.warmup, ceremony: defModes.ceremony, ending: defModes.ending } : { warmup: true, ceremony: true, ending: true };
+    var tr = { id: uid(), name: f.name, url: URL.createObjectURL(f), source: 'local', grp: 'manual', srcDir: srcDir, _size: size, lrc: null, lrcRaw: '', modes: mm };
+    if (modeKey) tr.srcMode = modeKey;
+    state.tracks.push(tr);
+    added++;
+  });
+  if (!added) {
+    setMusicImportStatus('没有新增：已导入过 ' + dups + ' 首同名同大小文件' + encNotice(enc), true);
+    updateStats(); renderTrackList();
+    return;
+  }
+  var tasks = lrcs.map(function (f) {
+    return fileToText(f).then(function (txt) { return { key: basenameNoExt(f.name).toLowerCase(), text: txt }; }).catch(function () { return null; });
+  });
+  Promise.all(tasks).then(function (entries) {
+    var pool = {};
+    entries.forEach(function (e) { if (e) pool[e.key] = e.text; });
+    var matched = 0;
+    state.tracks.forEach(function (t) {
+      if (t.grp === 'manual' && !t.lrcRaw && (!modeKey || t.srcMode === modeKey)) {
+        var k = basenameNoExt(t.name).toLowerCase();
+        if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+      }
+    });
+    if (matched) toast('已为 ' + matched + ' 首本地音乐匹配歌词');
+    updateStats(); renderTrackList();
+  });
+  updateStats(); renderTrackList();
+  setMusicImportStatus('已导入本地音乐 ' + added + ' 首' + (dups ? '（跳过重复 ' + dups + ' 首）' : '') + (modeKey ? '（' + state.modeDefs[modeKey].name + ' 环节专用）' : '') + encNotice(enc));
+  if (added) toast('已导入本地音乐 ' + added + ' 首');
+}
+function refreshMusicDirLabel() {
+  var el = $('musicImportDirName');
+  if (!el) return;
+  var list = state.localMusicDirs || [];
+  el.value = list.length
+    ? ('已记忆 ' + list.length + ' 个音乐文件夹：' + list.join('、'))
+    : (SERVER_MODE ? '尚未导入音乐文件夹（可导入程序目录内的子文件夹，重启自动加载）' : '选择音乐文件/文件夹即可导入（直接打开模式仅当次有效）');
+}
+// 入口：导入音乐文件夹（本地服务模式 → 项目内目录选择；否则 → 浏览器文件夹）
+function pickMusicDir() {
+  if (SERVER_MODE) openDirPicker(null, 'music');
+  else $('fileInputMusicDir').click();
+}
+// 本地服务模式：导入程序目录下的音乐子文件夹（相对路径，重启后自动重新加载）
+// 把程序目录下某文件夹的音乐载入曲目列表。
+// grp：曲目分组（默认 'music' 全局组）；defModes：默认在哪些环节播放（null=三个环节全开）；
+// remember：是否记入全局 localMusicDirs；label：状态栏显示名
+function loadMusicDirFromServer(dirName, grp, defModes, remember, label) {
+  if (!SERVER_MODE || !dirName) return Promise.resolve(false);
+  grp = grp || 'music';
+  remember = remember !== false;
+  label = label || dirName;
+  return fetch('/api/scan?dir=' + encodeURIComponent(dirName)).then(function (r) { return r.json(); }).then(function (d) {
+    var files = (d && d.files) || [];
+    var audio = [], lrcs = [], enc = 0;
+    files.forEach(function (rel) {
+      var n = rel.split('/').pop() || '';
+      if (AUDIO_RE.test(n)) audio.push(rel);
+      else if (LRC_RE.test(n)) lrcs.push(rel);
+      else if (ENCRYPTED_RE.test(n)) enc++;
+    });
+    if (!audio.length) {
+      setMusicImportStatus(enc
+        ? ('「' + label + '」里有 ' + enc + ' 个加密音乐文件（.mgg/.mflac/.ncm 等），无法直接播放。请先用「音钥 MusicKey」等解锁工具转成 mp3/ogg/flac 放到该文件夹后再导入。')
+        : ('「' + label + '」中没有可播放的音乐文件（支持 mp3 / wav / ogg / flac / m4a / aac / opus）'), true);
+      return false;
+    }
+    audio.sort(function (a, b) { return naturalCmp({ name: a.split('/').pop() }, { name: b.split('/').pop() }); });
+    state.tracks.forEach(function (t) { if (t.grp === grp) revokeTrackMedia(t); });
+    state.tracks = state.tracks.filter(function (t) { return t.grp !== grp; });
+    // 防重复：与其它本地/服务器组里已存在的同名曲目去重（避免 33 首显示成 66 首）
+    var have = {};
+    state.tracks.forEach(function (t) {
+      if ((t.source === 'local' || t.source === 'server')) have[t.name] = 1;
+    });
+    var dupN = 0;
+    var list = [];
+    audio.forEach(function (rel) {
+      var n = rel.split('/').pop();
+      if (have[n]) { dupN++; return; }
+      var mm = defModes
+        ? { warmup: !!defModes.warmup, ceremony: !!defModes.ceremony, ending: !!defModes.ending }
+        : { warmup: true, ceremony: true, ending: true };
+      list.push({ id: uid(), name: n, url: rel, source: 'server', grp: grp, lrc: null, lrcRaw: '', modes: mm });
+    });
+    state.tracks = state.tracks.concat(list);
+    if (list.length === 0) {
+      if (remember && state.localMusicDirs.indexOf(dirName) < 0) state.localMusicDirs.push(dirName);
+      saveConfig();
+      renderTrackList(); updateStats();
+      setMusicImportStatus('「' + label + '」里的歌曲都已存在，无新增' + (enc ? '（另有加密 ' + enc + ' 个）' : '') + (dupN ? '（跳过重复 ' + dupN + ' 首）' : ''));
+      return true;
+    }
+    if (remember && state.localMusicDirs.indexOf(dirName) < 0) state.localMusicDirs.push(dirName);
+    saveConfig();
+    if (grp === 'music') refreshMusicDirLabel();
+    renderTrackList(); updateStats();
+    var tasks = lrcs.map(function (rel) {
+      return fetch(rel).then(function (rr) { return rr.arrayBuffer(); }).then(function (ab) {
+        return { key: basenameNoExt(rel.split('/').pop()).toLowerCase(), text: bytesToString(new Uint8Array(ab)) };
+      }).catch(function () { return null; });
+    });
+    Promise.all(tasks).then(function (entries) {
+      var pool = {};
+      entries.forEach(function (e) { if (e) pool[e.key] = e.text; });
+      var matched = 0;
+      state.tracks.forEach(function (t) {
+        if (t.grp === grp && !t.lrcRaw) {
+          var k = basenameNoExt(t.name).toLowerCase();
+          if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+        }
+      });
+      if (matched) toast('已为 ' + matched + ' 首本地音乐匹配歌词');
+      renderTrackList(); updateStats();
+    });
+    setMusicImportStatus('已导入「' + label + '」本地音乐 ' + list.length + ' 首' + (dupN ? '（跳过重复 ' + dupN + ' 首）' : '') + (enc ? '（跳过加密 ' + enc + ' 个）' : ''));
+    return true;
+  }).catch(function () {
+    setMusicImportStatus('读取音乐文件夹失败：' + label, true);
+    return false;
+  });
+}
+// 环节专属本地音乐文件夹：加载（该环节专用，默认只在该环节播放）
+function loadModeLocalDir(key) {
+  var dir = state.modeLocalDirs[key] || '';
+  if (!SERVER_MODE || !dir) return Promise.resolve(false);
+  var mm = { warmup: false, ceremony: false, ending: false };
+  mm[key] = true;
+  return loadMusicDirFromServer(dir, 'modedir:' + key, mm, false, state.modeDefs[key].name + ' 专用音乐');
+}
+// 清除某环节的本地音乐文件夹（含非服务模式下用浏览器导入的该环节歌曲）
+function clearModeLocalDir(key) {
+  state.tracks = state.tracks.filter(function (t) {
+    if (t.grp === ('modedir:' + key)) { revokeTrackMedia(t); return false; }
+    if (t.grp === 'manual' && t.srcMode === key) { revokeTrackMedia(t); return false; }
+    return true;
+  });
+  state.modeLocalDirs[key] = '';
+  saveConfig();
+  renderModeCards(); renderTrackList(); updateStats();
+  toast('已清空「' + state.modeDefs[key].name + '」的本地音乐');
+}
+// 环节卡片上的「选择本地音乐文件夹」
+function pickModeLocalDir(key) {
+  if (SERVER_MODE) { openDirPicker(key, 'modelocal'); }
+  else { _musicPickMode = key; $('fileInputMusicDir').click(); }
+}
+// 启动时按记忆的文件夹列表重新加载本地音乐（服务器模式）
+function loadPersistedMusicDirs() {
+  if (!SERVER_MODE || !state.localMusicDirs.length) return;
+  var list = state.localMusicDirs.slice();
+  var idx = 0;
+  (function next() {
+    if (idx >= list.length) { buildQueue(); return; }
+    loadMusicDirFromServer(list[idx++]).then(next);
+  })();
+}
+
+/* 文件夹选择：File System Access API + 降级方案 */
+function doScan(h) {
+  state.dirHandle = h;
+  if (h && h.name) { state.photoDirName = h.name; scheduleConfigSave(); }
+  saveDirHandle(h);
+  scanDirHandle(h);
+}
+function pickNew() {
+  if (window.showDirectoryPicker) {
+    window.showDirectoryPicker({ mode: 'read' }).then(doScan).catch(function (e) {
+      if (e && e.name !== 'AbortError') {
+        toast('高级文件夹选择不可用，请点下方「兼容模式」按钮选择文件夹');
+        flashFallback();
+      }
+    });
+  } else {
+    $('fileInputFolder').click();
+  }
+}
+function pickFolder() {
+  try {
+    var h = state.dirHandle;
+    if (window.showDirectoryPicker && h) {
+      var timer = setTimeout(function () { pickNew(); }, 2500);
+      h.queryPermission({ mode: 'read' }).then(function (p) {
+        clearTimeout(timer);
+        if (p === 'granted') { doScan(h); }
+        else {
+          h.requestPermission({ mode: 'read' }).then(function (p2) {
+            if (p2 === 'granted') doScan(h);
+            else { toast('未获得文件夹权限，请点下方「兼容模式」按钮选择'); flashFallback(); }
+          }).catch(function () { pickNew(); });
+        }
+      }).catch(function () { clearTimeout(timer); pickNew(); });
+    } else {
+      pickNew();
+    }
+  } catch (e) {
+    toast('选择出错：' + e.message + '，请点下方「兼容模式」按钮');
+    flashFallback();
+  }
+}
+function flashFallback() {
+  var el = $('fallbackPick');
+  if (!el) return;
+  el.classList.add('flash');
+  try { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+  setTimeout(function () { el.classList.remove('flash'); }, 3000);
+}
+
+/* ================= 网易云扫码登录 ================= */
+function startQrLogin() {
+  if (!SERVER_MODE) { toast('扫码登录需本地服务模式：请用「启动播放器.bat」启动'); return; }
+  $('qrStatus').textContent = '正在获取二维码…';
+  $('qrModal').classList.remove('hidden');
+  fetch('/api/netease/qrkey').then(function (r) { return r.json(); }).then(function (d) {
+    if (!d.unikey) { $('qrStatus').textContent = '获取二维码失败，请重试'; return; }
+    state.qrKey = d.unikey;
+    $('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + encodeURIComponent(d.qrUrl);
+    $('qrStatus').textContent = '请用网易云音乐 App 扫码并确认登录';
+    pollQrLogin();
+  }).catch(function () { $('qrStatus').textContent = '网络错误，请重试'; });
+}
+function pollQrLogin() {
+  if (!state.qrKey || $('qrModal').classList.contains('hidden')) return;
+  clearTimeout(state.qrTimer);
+  fetch('/api/netease/qrcheck?key=' + encodeURIComponent(state.qrKey)).then(function (r) { return r.json(); }).then(function (d) {
+    if (d.code === 803 && d.musicU) {
+      state.neteaseCookie = d.musicU;
+      saveConfig();
+      var nc = $('neteaseCookie');
+      if (nc) nc.value = d.musicU;
+      $('qrStatus').textContent = '✅ 登录成功！VIP 歌曲可完整播放';
+      toast('🎉 网易云登录成功');
+      setTimeout(function () { closeQrModal(); }, 1600);
+      return;
+    }
+    if (d.code === 800) { $('qrStatus').textContent = '二维码已过期，请关闭后重新扫码'; return; }
+    if (d.code === 802) { $('qrStatus').textContent = '已扫码，请在手机上确认登录'; }
+    else if (d.code === 801) { $('qrStatus').textContent = '等待扫码…（用网易云音乐 App 扫描二维码）'; }
+    else { $('qrStatus').textContent = '状态：' + (d.message || '未知'); }
+    state.qrTimer = setTimeout(pollQrLogin, 2000);
+  }).catch(function () {
+    $('qrStatus').textContent = '网络错误，正在重试…';
+    state.qrTimer = setTimeout(pollQrLogin, 3000);
+  });
+}
+function closeQrModal() {
+  $('qrModal').classList.add('hidden');
+  clearTimeout(state.qrTimer);
+  state.qrKey = null;
+}
+function logoutNetease() {
+  state.neteaseCookie = '';
+  saveConfig();
+  var nc = $('neteaseCookie');
+  if (nc) nc.value = '';
+  toast('已退出网易云登录');
+}
+function scanDirHandle(h) {
+  var files = [];
+  walkDir(h, files).then(function () {
+    ingestFiles(files);
+  }).catch(function (e) { toast('读取文件夹失败：' + e.message); });
+}
+function walkDir(dir, out) {
+  return new Promise(function (res, rej) {
+    var it = dir.values();
+    function next() {
+      it.next().then(function (r) {
+        if (r.done) { res(out); return; }
+        var entry = r.value;
+        if (entry.kind === 'file') {
+          entry.getFile().then(function (f) { out.push(f); next(); }, function () { next(); });
+        } else if (entry.kind === 'directory') {
+          walkDir(entry, out).then(next, function () { next(); });
+        } else next();
+      }, rej);
+    }
+    next();
+  });
+}
+
+/* IndexedDB：记住文件夹授权 */
+function idb() {
+  return new Promise(function (res, rej) {
+    var r = indexedDB.open('wedding-player-db', 1);
+    r.onupgradeneeded = function () { r.result.createObjectStore('kv'); };
+    r.onsuccess = function () { res(r.result); };
+    r.onerror = function () { rej(r.error); };
+  });
+}
+function saveDirHandle(h) {
+  idb().then(function (db) {
+    try { db.transaction('kv', 'readwrite').objectStore('kv').put(h, 'dirHandle'); } catch (e) {}
+  }).catch(function () {});
+}
+function loadDirHandle() {
+  return idb().then(function (db) {
+    return new Promise(function (res) {
+      var g = db.transaction('kv').objectStore('kv').get('dirHandle');
+      g.onsuccess = function () { res(g.result || null); };
+      g.onerror = function () { res(null); };
+    });
+  }).catch(function () { return null; });
+}
+
+/* 拖拽文件夹 */
+function entryToFiles(entry) {
+  return new Promise(function (res) {
+    if (entry.isFile) {
+      entry.file(function (f) { res([f]); }, function () { res([]); });
+    } else if (entry.isDirectory) {
+      var reader = entry.createReader(), all = [];
+      (function readBatch() {
+        reader.readEntries(function (entries) {
+          if (!entries.length) {
+            Promise.all(all).then(function (arrs) {
+              var flat = [];
+              arrs.forEach(function (a) { flat = flat.concat(a); });
+              res(flat);
+            });
+            return;
+          }
+          entries.forEach(function (en) { all.push(entryToFiles(en)); });
+          readBatch();
+        }, function () { res([]); });
+      })();
+    } else res([]);
+  });
+}
+function dropFiles(items) {
+  var ps = Array.prototype.map.call(items, function (it) {
+    var en = it.webkitGetAsEntry ? it.webkitGetAsEntry() : null;
+    return en ? entryToFiles(en) : Promise.resolve([]);
+  });
+  Promise.all(ps).then(function (arrs) {
+    var flat = [];
+    arrs.forEach(function (a) { flat = flat.concat(a); });
+    if (flat.length) ingestFiles(flat); else toast('未识别到文件');
+  });
+}
+
+/* ================= 音乐列表 ================= */
+function findTrack(id) {
+  for (var i = 0; i < state.tracks.length; i++) if (state.tracks[i].id === id) return state.tracks[i];
+  return null;
+}
+function addOnlineTrack() {
+  var name = $('onlineName').value.trim(), url = $('onlineUrl').value.trim();
+  if (!url) { toast('请填写音乐地址'); return; }
+  if (!/^https?:\/\//i.test(url)) { toast('地址需以 http(s):// 开头'); return; }
+  if (!name) {
+    name = url.split('/').pop() || url;
+    try { name = decodeURIComponent(name); } catch (e) {}
+    name = name.replace(/\.[^.]+$/, '');
+  }
+  state.tracks.push({ id: uid(), name: name, url: url, source: 'online', lrcRaw: '', lrc: null, modes: { warmup: true, ceremony: true, ending: true } });
+  $('onlineName').value = '';
+  $('onlineUrl').value = '';
+  renderTrackList();
+  saveConfig();
+  toast('已添加在线音乐：' + name);
+}
+function renderTrackList() {
+  var wrap = $('trackList');
+  if (!state.tracks.length) {
+    wrap.innerHTML = '<p class="hint">暂无音乐。选择素材文件夹会自动扫描其中音乐；也可在上方「💿 导入本地音乐」导入已下载的音乐，或用「📃 歌单导入 / 🎵 在线音乐」添加。</p>';
+    return;
+  }
+  var html = '';
+  state.tracks.forEach(function (t) {
+    var tag;
+    if (t.source === 'online' && t.origin === 'playlist') tag = '<span class="tag playlist">歌单</span>';
+    else if (t.source === 'online') tag = '<span class="tag online">在线</span>';
+    else tag = '<span class="tag local">本地</span>';
+    var lrcBadge = (t.lrc && t.lrc.length && !isInstrumental(t)) ? ' <span style="color:#9ecb8a">♪歌词</span>' : '';
+    var trialBadge = t.trial ? ' <span style="color:#e8b85a">🎧试听</span>' : '';
+    var fullName = esc(t.name) + (t.artist ? ' - ' + esc(t.artist) : '');
+    var chips = '';
+    MODE_KEYS.forEach(function (k) {
+      chips += '<button class="chip' + (t.modes[k] ? ' on' : '') + '" data-act="mode" data-id="' + t.id + '" data-mode="' + k + '">' + state.modeDefs[k].name + '</button>';
+    });
+    html += '<div class="track">'
+      + '<div class="track-name" title="' + fullName + '">' + fullName + tag + lrcBadge + trialBadge + '</div>'
+      + '<div class="track-actions">' + chips
+      + '<button class="mini" data-act="lrc" data-id="' + t.id + '">🎼 歌词</button>'
+      + '<button class="mini danger" data-act="del" data-id="' + t.id + '">✕</button>'
+      + '</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+function trackListClick(e) {
+  var btn = e.target.closest('button');
+  if (!btn) return;
+  var id = btn.getAttribute('data-id');
+  if (!id) return;
+  var t = findTrack(id);
+  if (!t) return;
+  var act = btn.getAttribute('data-act');
+  if (act === 'lrc') { openLrcModal(t); }
+  else if (act === 'del') {
+    state.tracks = state.tracks.filter(function (x) { return x.id !== id; });
+    revokeTrackMedia(t);
+    renderTrackList(); saveConfig(); updateStats();
+  } else if (act === 'mode') {
+    var k = btn.getAttribute('data-mode');
+    t.modes[k] = !t.modes[k];
+    renderTrackList(); saveConfig();
+  }
+}
+
+/* 歌词弹窗 */
+function openLrcModal(t) {
+  state.lrcEditId = t.id;
+  $('lrcText').value = t.lrcRaw || '';
+  $('lrcModal').classList.remove('hidden');
+  $('lrcText').focus();
+}
+function closeLrcModal() { $('lrcModal').classList.add('hidden'); state.lrcEditId = null; }
+function saveLrcModal() {
+  var t = findTrack(state.lrcEditId);
+  if (t) {
+    var txt = $('lrcText').value;
+    t.lrcRaw = txt;
+    t.lrc = parseLRC(txt);
+    renderTrackList();
+    saveConfig();
+    toast(t.lrc && t.lrc.length ? ('歌词已保存，共 ' + t.lrc.length + ' 行') : '未解析到带时间轴的歌词，请检查 LRC 格式');
+  }
+  closeLrcModal();
+}
+
+/* ================= 模式设置 UI ================= */
+function option(v, txt, cur) {
+  return '<option value="' + v + '"' + (cur === v ? ' selected' : '') + '>' + txt + '</option>';
+}
+var TRANSITION_OPTIONS = [
+  ['fade', '淡入淡出'], ['kenburns', '缓慢缩放'], ['zoomfade', '缩放淡入'], ['slide', '滑动'],
+  ['blur', '模糊'], ['flip', '3D翻转'], ['circle', '圆形'], ['coverflow', '封面流']
+];
+var PARTICLE_OPTIONS = [
+  ['off', '关闭'], ['confetti', '彩带'], ['heart', '爱心'], ['star', '星光'], ['petal', '花瓣'],
+  ['snow', '雪花'], ['fire', '火焰'], ['bubble', '泡泡'], ['firefly', '萤火虫'], ['gold', '金粉'], ['balloon', '气球']
+];
+function modeCardsChipClick(e) {
+  var btn = e.target.closest('button[data-f][data-val]');
+  if (!btn) return;
+  var f = btn.getAttribute('data-f');
+  var val = btn.getAttribute('data-val');
+  var card = btn.closest('.mode-card');
+  if (!card) return;
+  var key = card.getAttribute('data-mode');
+  var def = state.modeDefs[key];
+  if (!def) return;
+  var arr = (f === 'transition') ? def.transitions : def.particlesList;
+  if (!arr || !arr.length) arr = [];
+  var idx = arr.indexOf(val);
+  if (idx >= 0) arr.splice(idx, 1); else arr.push(val);
+  if (f === 'transition') def.transitions = arr; else def.particlesList = arr;
+  renderModeCards();
+  saveConfig();
+}
+function renderModeCards() {
+  var wrap = $('modeCards'), html = '';
+  MODE_KEYS.forEach(function (k) {
+    var d = state.modeDefs[k];
+    html += '<div class="mode-card" data-mode="' + k + '">'
+      + '<h3>' + (d.icon ? d.icon + ' ' : '') + d.name + ' 环节</h3>'
+      + '<label>素材文件夹（可留空共用上方素材）</label>'
+      + '<div class="row" style="margin-top:2px">'
+      + '<button type="button" class="btn mini" data-act="pickdir" data-mode="' + k + '" style="flex:none">📁 选择文件夹</button>'
+      + '<span id="dirVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeDirs[k] ? esc(state.modeDirs[k]) : '（未设置，用上方素材）') + '</span>'
+      + '<button type="button" class="btn mini danger" data-act="cleardir" data-mode="' + k + '" style="flex:none"' + (state.modeDirs[k] ? '' : ' disabled') + '>✕</button>'
+      + '</div>'
+      + '<label>歌单链接（本环节专用，只填一个，可留空）</label>'
+      + '<input type="text" data-f="playlists" value="' + esc(state.modePlaylists[k] || '') + '" placeholder="粘贴本环节的歌单链接，如 y.qq.com/... 或 music.163.com/...">'
+      + '<label>音乐来源（本环节播放哪批音乐，歌单 / 本地 二选一）</label>'
+      + '<select data-f="musicSource">'
+      + option('all', '全部（歌单 + 本地一起，默认）', state.modeMusicSource[k] || 'all')
+      + option('playlist', '歌单（只放歌单导入 + 在线直链，需网络）', state.modeMusicSource[k] || 'all')
+      + option('local', '本地（只放本地已下载/扫描的音乐，离线最稳）', state.modeMusicSource[k] || 'all')
+      + '</select>'
+      + '<label>本地音乐文件夹（本环节专用：设置后该环节只播此目录的音乐，未设置才用上方通用/素材音乐）</label>'
+      + '<div class="row" style="margin-top:2px">'
+      + '<button type="button" class="btn mini" data-act="picklocaldir" data-mode="' + k + '" style="flex:none">💿 选择</button>'
+      + '<span id="mlVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeLocalDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeLocalDirs[k] ? esc(state.modeLocalDirs[k]) : '（未设置：用上方「导入本地音乐」或素材文件夹里的音乐）') + '</span>'
+      + '<button type="button" class="btn mini danger" data-act="clearlocaldir" data-mode="' + k + '" style="flex:none"' + (state.modeLocalDirs[k] ? '' : ' disabled') + '>✕</button>'
+      + '</div>'
+      + '<label>照片停留 <span class="val">' + d.photoDur + '</span> 秒</label>'
+      + '<input type="range" min="2" max="20" step="1" value="' + d.photoDur + '" data-f="photoDur">'
+      + '<label>切换特效（可多选，每张照片随机切换）</label>'
+      + '<div class="chip-group">'
+      + TRANSITION_OPTIONS.map(function (o) {
+          return '<button class="chip' + (d.transitions.indexOf(o[0]) >= 0 ? ' on' : '') + '" data-f="transition" data-val="' + o[0] + '">' + o[1] + '</button>';
+        }).join('')
+      + '</div>'
+      + '<label>粒子特效（可多选，随机切换）</label>'
+      + '<div class="chip-group">'
+      + PARTICLE_OPTIONS.map(function (o) {
+          return '<button class="chip' + (d.particlesList.indexOf(o[0]) >= 0 ? ' on' : '') + '" data-f="particles" data-val="' + o[0] + '">' + o[1] + '</button>';
+        }).join('')
+      + '</div>'
+      + '<label>叠加文字（留空不显示，仪式环节可用）</label>'
+      + '<input type="text" data-f="overlay" value="' + esc(d.overlay) + '" placeholder="如：欢迎参加我们的婚礼">'
+      + '<label class="check"><input type="checkbox" data-f="lyrics"' + (d.lyrics ? ' checked' : '') + '> 该环节显示歌词</label>'
+      + '<label class="check"><input type="checkbox" data-f="shuffle"' + (d.shuffle ? ' checked' : '') + '> 随机播放该环节音乐</label>'
+      + '<label class="check"><input type="checkbox" data-f="photoShuffle"' + (d.photoShuffle ? ' checked' : '') + '> 照片随机轮播（一轮内不重复）</label>'
+      + '</div>';
+  });
+  wrap.innerHTML = html;
+}
+function modeCardsInput(e) {
+  var el = e.target, f = el.getAttribute('data-f');
+  if (!f) return;
+  var card = el.closest('.mode-card');
+  if (!card) return;
+  var key = card.getAttribute('data-mode');
+  var def = state.modeDefs[key];
+  if (!def) return;
+  if (f === 'photoDur') {
+    def.photoDur = parseInt(el.value, 10) || 4;
+    var v = card.querySelector('.val');
+    if (v) v.textContent = def.photoDur;
+  } else if (f === 'lyrics' || f === 'shuffle' || f === 'photoShuffle') {
+    def[f] = el.checked;
+  } else if (f === 'dir') {
+    state.modeDirs[key] = el.value.trim();
+  } else if (f === 'playlists') {
+    state.modePlaylists[key] = el.value.trim();
+    // 歌单修改后立即重新导入该模式（覆盖）
+    if (SERVER_MODE && el.value.trim() && (state.modeMusicSource[key] || 'all') !== 'local') {
+      autoImportModePlaylists(key, function () {
+        buildQueue();
+        renderTrackList();
+        updateStats();
+      });
+    }
+  } else if (f === 'musicSource') {
+    state.modeMusicSource[key] = el.value || 'all';
+    var inPlayer = !$('screenPlayer').classList.contains('hidden');
+    if (SERVER_MODE && state.modeMusicSource[key] === 'playlist' && modePlaylistList(key).length) {
+      autoImportModePlaylists(key, function () {
+        if (inPlayer) buildQueue();
+        renderTrackList();
+        updateStats();
+      });
+    } else if (inPlayer) {
+      buildQueue();
+      if (!state.queue.length) toast('「' + state.modeDefs[key].name + '」当前没有' + (state.modeMusicSource[key] === 'local' ? '本地导入的音乐（请在上方「导入本地音乐」导入）' : '歌单/在线歌曲（请检查歌单链接）'));
+    }
+  } else {
+    def[f] = el.value;
+  }
+  saveConfig();
+}
+
+/* ================= 素材文件夹选择弹框 ================= */
+var _dirPickerMode = null;   // 当前正在为哪个模式选目录
+var _dirPickerTarget = 'material'; // material=素材目录 / music=本地音乐目录 / modelocal=环节专属音乐目录
+var _musicPickMode = null;   // 浏览器模式：正在为哪个环节选本地音乐文件夹
+var _dirPickerPath = '';     // 当前浏览到的相对路径
+function openDirPicker(modeKey, target) {
+  _dirPickerMode = modeKey;
+  _dirPickerTarget = target || 'material';
+  _dirPickerPath = '';
+  var t = $('dirModalTitle'), h = $('dirModalHint'), u = $('btnDirUseDefault');
+  if (t) {
+    if (_dirPickerTarget === 'music') t.textContent = '💿 选择本地音乐文件夹';
+    else if (_dirPickerTarget === 'modelocal') t.textContent = '💿 选择「' + state.modeDefs[modeKey].name + '」环节的本地音乐文件夹';
+    else t.textContent = '📁 选择素材文件夹';
+  }
+  if (h) {
+    if (_dirPickerTarget === 'music') h.textContent = '选择程序目录内存放本地已下载音乐的文件夹（可进入子文件夹），其中的 mp3/ogg/flac 等会自动导入';
+    else if (_dirPickerTarget === 'modelocal') h.textContent = '该文件夹的音乐会作为「' + state.modeDefs[modeKey].name + '」环节的专属歌曲（默认只在此环节播放），可进入子文件夹选择';
+    else h.textContent = '选择程序目录下的文件夹（可进入子文件夹）';
+  }
+  if (u) u.style.display = (_dirPickerTarget === 'material') ? '' : 'none';
+  $('dirModal').classList.remove('hidden');
+  loadDirPickerList();
+}
+function closeDirPicker() {
+  $('dirModal').classList.add('hidden');
+  _dirPickerMode = null;
+}
+function loadDirPickerList() {
+  var listEl = $('dirList');
+  listEl.innerHTML = '<p style="color:#9a9aa6;padding:8px">加载中…</p>';
+  var bc = $('dirBreadcrumb');
+  bc.textContent = _dirPickerPath ? ('当前：' + _dirPickerPath) : '当前：程序根目录';
+  fetch('/api/dirs?path=' + encodeURIComponent(_dirPickerPath)).then(function (r) { return r.json(); }).then(function (d) {
+    var dirs = (d && d.dirs) || [];
+    var html = '';
+    if (_dirPickerPath) {
+      html += '<div class="dir-item" data-act="up" style="padding:8px 10px;cursor:pointer;border-bottom:1px solid #23232c;color:#e8c86a">⬆ 返回上级</div>';
+    }
+    if (!dirs.length && !_dirPickerPath) {
+      html += '<p style="color:#9a9aa6;padding:10px">程序目录下暂无子文件夹。请把素材放到程序目录下的文件夹里，或直接使用上方素材。</p>';
+    }
+    dirs.forEach(function (name) {
+      var full = _dirPickerPath ? (_dirPickerPath + '/' + name) : name;
+      html += '<div class="dir-item" data-act="open" data-path="' + esc(full) + '" style="padding:8px 10px;cursor:pointer;border-bottom:1px solid #23232c">📁 ' + esc(name) + '</div>';
+    });
+    html += '<div class="dir-item" data-act="pick" data-path="' + esc(_dirPickerPath) + '" style="padding:8px 10px;cursor:pointer;color:#9ecb8a;font-weight:600">✅ 选这里（' + (_dirPickerPath || '程序根目录') + '）</div>';
+    listEl.innerHTML = html;
+  }).catch(function () {
+    listEl.innerHTML = '<p style="color:#e08a8a;padding:8px">获取文件夹列表失败</p>';
+  });
+}
+function dirListClick(e) {
+  var item = e.target.closest('.dir-item');
+  if (!item) return;
+  var act = item.getAttribute('data-act');
+  if (act === 'up') {
+    var idx = _dirPickerPath.lastIndexOf('/');
+    _dirPickerPath = idx > 0 ? _dirPickerPath.slice(0, idx) : '';
+    loadDirPickerList();
+  } else if (act === 'open') {
+    _dirPickerPath = item.getAttribute('data-path');
+    loadDirPickerList();
+  } else if (act === 'pick') {
+    var path = item.getAttribute('data-path') || '';
+    if (_dirPickerTarget === 'music') {
+      closeDirPicker();
+      loadMusicDirFromServer(path).then(function (ok) {
+        if (ok) toast('已导入本地音乐文件夹：' + (path || '程序根目录'));
+      });
+      return;
+    }
+    if (_dirPickerTarget === 'modelocal' && _dirPickerMode) {
+      var mk = _dirPickerMode;
+      state.modeLocalDirs[mk] = path;
+      saveConfig();
+      closeDirPicker();
+      loadModeLocalDir(mk).then(function (ok) {
+        renderModeCards(); renderTrackList(); updateStats();
+        if (ok) toast('已设置「' + state.modeDefs[mk].name + '」本地音乐文件夹：' + (path || '程序根目录'));
+      });
+      return;
+    }
+    if (_dirPickerMode) {
+      state.modeDirs[_dirPickerMode] = path;
+      saveConfig();
+      renderModeCards();
+      toast('已设置「' + state.modeDefs[_dirPickerMode].name + '」素材文件夹：' + (path || '（用上方素材）'));
+      closeDirPicker();
+    }
+  }
+}
+function clearModeDir(modeKey) {
+  state.modeDirs[modeKey] = '';
+  saveConfig();
+  renderModeCards();
+  toast('已清空「' + state.modeDefs[modeKey].name + '」素材文件夹，使用上方素材');
+}
+
+/* ================= 配置持久化 ================= */
+function saveConfig() {
+  var m = {};
+  MODE_KEYS.forEach(function (k) {
+    var d = state.modeDefs[k];
+    m[k] = { photoDur: d.photoDur, transitions: d.transitions, particlesList: d.particlesList, overlay: d.overlay, lyrics: d.lyrics, shuffle: d.shuffle, photoShuffle: !!d.photoShuffle, transition: d.transition, particles: d.particles };
+  });
+  try { localStorage.setItem('weddingPlayerCfg', JSON.stringify({ version: 7, modes: m, cover: state.cover, modeMusicSource: state.modeMusicSource || {}, modeLocalDirs: state.modeLocalDirs || {}, localMusicDirs: state.localMusicDirs || [] })); } catch (e) {}
+  scheduleConfigSave();
+}
+var configSaveTimer = null;
+function buildConfigFile() {
+  var m = {};
+  MODE_KEYS.forEach(function (k) {
+    var d = state.modeDefs[k];
+    m[k] = { photoDur: d.photoDur, transitions: d.transitions, particlesList: d.particlesList, overlay: d.overlay, lyrics: d.lyrics, shuffle: d.shuffle, photoShuffle: !!d.photoShuffle, transition: d.transition, particles: d.particles };
+  });
+  return {
+    version: 4,
+    photoDir: state.photoDirName || '',
+    cover: state.cover,
+    modes: m,
+    modeDirs: state.modeDirs || {},
+    modePlaylists: state.modePlaylists || {},
+    modeMusicSource: state.modeMusicSource || {},
+    modeLocalDirs: state.modeLocalDirs || {},
+    localMusicDirs: state.localMusicDirs || [],
+    neteaseCookie: state.neteaseCookie || '',
+    qqCookie: state.qqCookie || '',
+    playlists: state.playlists || []
+  };
+}
+function scheduleConfigSave() {
+  if (!SERVER_MODE) return;
+  clearTimeout(configSaveTimer);
+  configSaveTimer = setTimeout(function () {
+    try {
+      fetch('/api/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(buildConfigFile(), null, 2) }).catch(function () {});
+    } catch (e) {}
+  }, 600);
+}
+function restoreFromConfig(cfg) {
+  if (!cfg || !cfg.version) return;
+  if (cfg.cover) state.cover = cfg.cover;
+  if (cfg.neteaseCookie) state.neteaseCookie = cfg.neteaseCookie;
+  if (cfg.qqCookie) state.qqCookie = cfg.qqCookie;
+  if (cfg.photoDir) { state.photoDirName = cfg.photoDir; state.genericDir = cfg.photoDir; }
+  if (cfg.modes) {
+    MODE_KEYS.forEach(function (k) {
+      var d = cfg.modes[k];
+      if (!d) return;
+      for (var f in d) if (f in state.modeDefs[k]) state.modeDefs[k][f] = d[f];
+      if (d.transition && !d.transitions) state.modeDefs[k].transitions = [d.transition];
+      if (d.particles && !d.particlesList) state.modeDefs[k].particlesList = [d.particles];
+    });
+  }
+  if (cfg.playlists && cfg.playlists.length) {
+    state.playlists = cfg.playlists.slice();
+  }
+  if (cfg.modeDirs) {
+    MODE_KEYS.forEach(function (k) { if (typeof cfg.modeDirs[k] === 'string') state.modeDirs[k] = cfg.modeDirs[k]; });
+  }
+  if (cfg.modeLocalDirs) {
+    MODE_KEYS.forEach(function (k) { if (typeof cfg.modeLocalDirs[k] === 'string') state.modeLocalDirs[k] = cfg.modeLocalDirs[k]; });
+  }
+  if (cfg.modePlaylists) {
+    MODE_KEYS.forEach(function (k) {
+      var v = cfg.modePlaylists[k];
+      if (typeof v === 'string') state.modePlaylists[k] = v;
+      else if (Array.isArray(v) && v.length) state.modePlaylists[k] = v[0]; // 旧数组格式取第一个
+      else if (Array.isArray(v)) state.modePlaylists[k] = '';
+    });
+  }
+  if (cfg.modeMusicSource) {
+    MODE_KEYS.forEach(function (k) {
+      var v = cfg.modeMusicSource[k];
+      if (v === 'playlist' || v === 'local') state.modeMusicSource[k] = v;
+      else state.modeMusicSource[k] = 'all';
+    });
+  }
+  if (Array.isArray(cfg.localMusicDirs)) {
+    state.localMusicDirs = cfg.localMusicDirs.map(function (x) { return String(x); }).filter(Boolean).slice(0, 30);
+  }
+}
+function loadConfig() {
+  try {
+    var raw = localStorage.getItem('weddingPlayerCfg');
+    if (!raw) return;
+    var cfg = JSON.parse(raw);
+    if (cfg.cover) state.cover = cfg.cover;
+    // Cookie 不恢复：每次启动重新扫码登录
+    if (cfg.modes) {
+      MODE_KEYS.forEach(function (k) {
+        var d = cfg.modes[k];
+        if (!d) return;
+        var applyAll = cfg.version && cfg.version >= 2;
+        for (var f in d) {
+          if (f in state.modeDefs[k] && (applyAll || f !== 'shuffle')) state.modeDefs[k][f] = d[f];
+        }
+        if (d.transition && !d.transitions) state.modeDefs[k].transitions = [d.transition];
+        if (d.particles && !d.particlesList) state.modeDefs[k].particlesList = [d.particles];
+      });
+    }
+    // 不再恢复歌单/在线曲目：每次启动都是空列表，重新导入
+    if (cfg.modeMusicSource) {
+      MODE_KEYS.forEach(function (k) {
+        var v = cfg.modeMusicSource[k];
+        if (v === 'playlist' || v === 'local') state.modeMusicSource[k] = v;
+        else state.modeMusicSource[k] = 'all';
+      });
+    }
+    if (cfg.modeLocalDirs) {
+      MODE_KEYS.forEach(function (k) { if (typeof cfg.modeLocalDirs[k] === 'string') state.modeLocalDirs[k] = cfg.modeLocalDirs[k]; });
+    }
+    if (Array.isArray(cfg.localMusicDirs)) {
+      state.localMusicDirs = cfg.localMusicDirs.map(function (x) { return String(x); }).filter(Boolean).slice(0, 30);
+    }
+  } catch (e) {}
+}
+
+/* ================= 歌单导入（QQ / 网易云） ================= */
+var SERVER_MODE = (location.protocol === 'http:' || location.protocol === 'https:') && (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+var PROXIES = [
+  function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+  function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); },
+  function (u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); },
+  function (u) { return 'https://cors.eu.org/' + encodeURIComponent(u); }
+];
+var DIRECT_API = {
+  'netease/playlist': function (p) { return 'https://music.163.com/api/playlist/detail?id=' + p.id; },
+  'netease/search': function (p) { return 'https://music.163.com/api/search/get/web?s=' + encodeURIComponent(p.s) + '&type=1&limit=8&offset=0'; },
+  'netease/url': function (p) { return 'https://music.163.com/api/song/enhance/player/url?ids=[' + p.id + ']&br=128000'; },
+  'netease/lyric': function (p) { return 'https://music.163.com/api/song/lyric?id=' + p.id + '&lv=-1&kv=-1&tv=-1'; },
+  'qq/playlist': function (p) {
+    return 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg?type=1&json=1&utf8=1&onlysong=0&disstid=' + p.id
+      + '&format=json&g_tk=1913204067&loginUin=0&hostUin=0&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=0';
+  }
+};
+function apiGetJSON(endpoint, params) {
+  var qs = '';
+  for (var k in params) qs += (qs ? '&' : '') + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+  if (SERVER_MODE) {
+    var qs2 = qs;
+    if (endpoint.indexOf('netease/') === 0 && state.neteaseCookie) {
+      qs2 += (qs2 ? '&' : '') + 'cookie=' + encodeURIComponent(state.neteaseCookie);
+    }
+    return fetch('/api/' + endpoint + (qs2 ? '?' + qs2 : '')).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+  var base = DIRECT_API[endpoint] ? DIRECT_API[endpoint](params) : null;
+  if (!base) return Promise.reject(new Error('unsupported endpoint'));
+  var attempts = [base].concat(PROXIES.map(function (p) { return p(base); }));
+  return tryFetchChain(attempts);
+}
+function tryFetchChain(attempts) {
+  if (!attempts.length) return Promise.reject(new Error('所有网络通道均失败'));
+  var url = attempts.shift();
+  return fetchJsonTimeout(url, 12000).catch(function () { return tryFetchChain(attempts); });
+}
+function fetchJsonTimeout(url, ms) {
+  return new Promise(function (res, rej) {
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); rej(new Error('timeout')); }, ms);
+    fetch(url, ctrl ? { signal: ctrl.signal } : {}).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) { clearTimeout(timer); res(j); }).catch(function (e) { clearTimeout(timer); rej(e); });
+  });
+}
+function extractUrl(text) {
+  var m = String(text).match(/https?:\/\/[^\s"'<>]+/i);
+  return m ? m[0] : String(text).trim();
+}
+function parsePlaylistUrl(url) {
+  var m;
+  if (/music\.163\.com|163\.cn/i.test(url)) {
+    m = url.match(/[?&]id=(\d+)/) || url.match(/playlist\/(\d+)/);
+    if (m) return { platform: 'netease', id: m[1] };
+  } else if (/y\.qq\.com|qq\.com/i.test(url)) {
+    m = url.match(/playlist\/(\d+)/) || url.match(/playlist_id=(\d+)/) || url.match(/disstid=(\d+)/) || url.match(/[?&]id=(\d+)/);
+    if (m) return { platform: 'qq', id: m[1] };
+  }
+  return null;
+}
+function setImportStatus(msg, isErr) {
+  var el = $('importStatus');
+  el.classList.remove('hidden');
+  el.style.color = isErr ? '#e08a8a' : '#9ecb8a';
+  el.textContent = msg;
+}
+function importPlaylist() {
+  var url = extractUrl($('playlistUrl').value);
+  if (!url) { toast('请先粘贴歌单链接'); return; }
+  importPlaylistUrl(url).then(function () {
+    // 通用歌单导入后保留在输入框，作为通用配置的展示
+    var pl = $('playlistUrl');
+    if (pl && !pl.value) pl.value = url;
+  });
+}
+function importPlaylistUrl(url, modeKey) {
+  if (url && typeof url === 'object') url = url.url || '';
+  if (!url) return Promise.resolve();
+  var p = parsePlaylistUrl(url);
+  if (p) { if (!modeKey) setGenericPlaylist(url); return runPlaylistImport(p, modeKey || undefined); }
+  // 分享短链（cX.y.qq.com/base/fcgi-bin/u、url.cn 等）：通过本地服务跟随跳转
+  if (SERVER_MODE && /qq.com|url.cn|music.163.com|163.cn/i.test(url)) {
+    setImportStatus('正在解析分享链接…');
+    return fetch('/api/qq/resolve?url=' + encodeURIComponent(url)).then(function (r) { return r.json(); }).then(function (d) {
+      var p2 = d && d.url ? parsePlaylistUrl(d.url) : null;
+      if (p2) { if (!modeKey) setGenericPlaylist(url); return runPlaylistImport(p2, modeKey); }
+      else { setImportStatus('无法识别的歌单链接。请使用形如 y.qq.com/n/ryqq/playlist/xxxx 的链接，或点下方「粘贴歌单文本」', true); }
+    }).catch(function () {
+      setImportStatus('解析链接失败。请使用形如 y.qq.com/n/ryqq/playlist/xxxx 的链接，或点下方「粘贴歌单文本」', true);
+    });
+  }
+  setImportStatus('无法识别的歌单链接。请使用形如 y.qq.com/n/ryqq/playlist/xxxx 的链接，或点下方「粘贴歌单文本」', true);
+  return Promise.resolve();
+}
+function rememberPlaylist(item) {
+  if (!item || !item.url && !item.text) return;
+  var exists = state.playlists.some(function (x) { return x.url === item.url && x.text === item.text; });
+  if (!exists) { state.playlists.push(item); saveConfig(); }
+}
+// 通用歌单：覆盖式保存（左边「导入歌单」= 通用配置，只保留一条）
+function setGenericPlaylist(url) {
+  state.playlists = [{ type: 'link', url: url }];
+  saveConfig();
+}
+// 归一化歌单条目：字符串 → { type:'link', url }；对象原样返回
+function normalizePlaylistItem(item) {
+  if (!item) return null;
+  if (typeof item === 'string') return { type: 'link', url: item };
+  return item;
+}
+// 取某模式实际生效的歌单：优先该模式定制歌单，无定制则用全局通用歌单（顶部「导入歌单」）
+// 兼容：单个链接字符串 / 对象 / 数组
+function modePlaylistList(k) {
+  var v = state.modePlaylists[k];
+  var items;
+  if (v && (typeof v === 'string' ? v.trim() : (Array.isArray(v) ? v.length : v.url))) {
+    items = (Array.isArray(v) ? v : [v]).map(normalizePlaylistItem).filter(Boolean);
+  } else {
+    // 无定制 → 用全局通用歌单
+    items = (state.playlists || []).map(normalizePlaylistItem).filter(Boolean);
+  }
+  return items;
+}
+function runPlaylistImport(p, modeKey) {
+  if (p.platform === 'netease') return importNeteasePlaylist(p.id, modeKey);
+  else if (p.platform === 'qq') return importQQPlaylist(p.id, modeKey);
+  return Promise.resolve();
+}
+function importNeteasePlaylist(id, modeKey) {
+  setImportStatus('正在获取网易云歌单…');
+  return apiGetJSON('netease/playlist', { id: id }).then(function (data) {
+    var pl = data && (data.playlist || data.result);
+    if (!pl || !pl.tracks || !pl.tracks.length) throw new Error('歌单为空或需要登录');
+    var added = 0, failed = [], dupes = [];
+    var modeFlags = { warmup: false, ceremony: false, ending: false };
+    if (modeKey) {
+      modeFlags[modeKey] = true;
+    } else {
+      // 通用歌单只标记「没有定制歌单」的模式
+      MODE_KEYS.forEach(function (mk) {
+        var v = state.modePlaylists[mk];
+        if (!v || (typeof v === 'string' ? !v.trim() : !(Array.isArray(v) ? v.length : v.url))) modeFlags[mk] = true;
+      });
+    }
+    // 覆盖导入：删除该模式（或没有定制的模式）已有的歌单歌曲
+    if (modeKey) {
+      state.tracks = state.tracks.filter(function (t) { return !(t.origin === 'playlist' && t.modes[modeKey]); });
+    } else {
+      // 顶部通用导入：清空所有没有定制歌单的模式的歌单歌曲（定制模式保留自己的）
+      var customKeys = MODE_KEYS.filter(function (mk) {
+        var v = state.modePlaylists[mk];
+        return v && (typeof v === 'string' ? v.trim() : (Array.isArray(v) ? v.length : v.url));
+      });
+      state.tracks = state.tracks.filter(function (t) {
+        if (t.origin !== 'playlist') return true;
+        for (var i = 0; i < customKeys.length; i++) { if (t.modes[customKeys[i]]) return true; }
+        return false;
+      });
+    }
+    pl.tracks.forEach(function (t) {
+      var name = t.name || '';
+      var artist = (t.ar || t.artists || []).map(function (a) { return a.name; }).join('/');
+      if (!name) return;
+      var exist = state.tracks.filter(function (x) { return x.name === name && (x.artist || '') === artist; });
+      if (exist.length) {
+        exist.forEach(function (x) { x.modes[modeKey] = true; });
+        added++;
+        return;
+      }
+      var nt = makeImportTrack(name, artist, t.id);
+      nt.modes = { warmup: modeFlags.warmup, ceremony: modeFlags.ceremony, ending: modeFlags.ending };
+      state.tracks.push(nt);
+      added++;
+    });
+    finishImport(added, failed, '网易云歌单「' + (pl.name || '') + '」' + (modeKey ? '（' + state.modeDefs[modeKey].name + '）' : ''), dupes);
+  }).catch(function (e) { setImportStatus('导入失败：' + e.message, true); });
+}
+function importQQPlaylist(id, modeKey) {
+  setImportStatus('正在获取 QQ 音乐歌单…');
+  return apiGetJSON('qq/playlist', { id: id }).then(function (data) {
+    var cd = data && data.cdlist && data.cdlist[0];
+    if (!cd || !cd.songlist || !cd.songlist.length) throw new Error('歌单为空或需要登录');
+    var songs = cd.songlist.map(function (s) {
+      return { name: (s.songname || '').trim(), artist: (s.singer || []).map(function (x) { return x.name; }).join('/'), qqmid: s.songmid || '', qqMediaMid: s.strMediaMid || '' };
+    }).filter(function (s) { return s.name; });
+    // QQ 歌单直接用 QQ 源播放（qqmid）。覆盖导入：先删掉该模式旧的歌单歌曲
+    var added = 0, dupes = [];
+    var modeFlags = { warmup: false, ceremony: false, ending: false };
+    if (modeKey) {
+      modeFlags[modeKey] = true;
+    } else {
+      // 通用歌单只标记「没有定制歌单」的模式
+      MODE_KEYS.forEach(function (mk) {
+        var v = state.modePlaylists[mk];
+        if (!v || (typeof v === 'string' ? !v.trim() : !(Array.isArray(v) ? v.length : v.url))) modeFlags[mk] = true;
+      });
+    }
+    // 覆盖导入：删除该模式（或没有定制的模式）已有的歌单歌曲
+    if (modeKey) {
+      state.tracks = state.tracks.filter(function (t) { return !(t.origin === 'playlist' && t.modes[modeKey]); });
+    } else {
+      // 顶部通用导入：清空所有没有定制歌单的模式的歌单歌曲（定制模式保留自己的）
+      var customKeys = MODE_KEYS.filter(function (mk) {
+        var v = state.modePlaylists[mk];
+        return v && (typeof v === 'string' ? v.trim() : (Array.isArray(v) ? v.length : v.url));
+      });
+      state.tracks = state.tracks.filter(function (t) {
+        if (t.origin !== 'playlist') return true;
+        for (var i = 0; i < customKeys.length; i++) { if (t.modes[customKeys[i]]) return true; }
+        return false;
+      });
+    }
+    songs.forEach(function (s) {
+      // 若同一首歌被其他模式也配置了（多模式共用），保留其模式标记；否则新建
+      var exist = state.tracks.filter(function (t) { return t.name === s.name && (t.artist || '') === (s.artist || ''); });
+      if (exist.length) {
+        exist.forEach(function (t) { t.modes[modeKey] = true; });
+        added++;
+        return;
+      }
+      state.tracks.push({
+        id: uid(), name: s.name, artist: s.artist || '', url: '',
+        source: 'online', origin: 'playlist',
+        netId: 0, qqmid: s.qqmid, qqMediaMid: s.qqMediaMid || '',
+        lrc: null, lrcRaw: '', modes: { warmup: modeFlags.warmup, ceremony: modeFlags.ceremony, ending: modeFlags.ending }
+      });
+      added++;
+    });
+    finishImport(added, [], 'QQ音乐歌单「' + (cd.dissname || '') + '」' + (modeKey ? '（' + state.modeDefs[modeKey].name + '）' : ''), dupes);
+  }).catch(function (e) { setImportStatus('导入失败：' + e.message, true); });
+}
+function importPlaylistText() {
+  var text = $('playlistText').value.trim();
+  if (!text) { toast('请先粘贴歌单文本'); return; }
+  var lines = text.split(String.fromCharCode(10));
+  var songs = [];
+  lines.forEach(function (l) {
+    l = l.replace(String.fromCharCode(13), '').trim();
+    if (!l) return;
+    var m = l.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+    if (m) songs.push({ name: m[1].trim(), artist: m[2].trim() });
+    else if (l.length < 60) songs.push({ name: l, artist: '' });
+  });
+  if (!songs.length) { toast('未识别到有效歌名'); return; }
+  rememberPlaylist({ type: 'text', text: $('playlistText').value.trim() });
+  setImportStatus('共 ' + songs.length + ' 首，正在网易云匹配可播放版本…');
+  return matchAndAdd(songs, '粘贴歌单', SERVER_MODE);
+}
+function makeImportTrack(name, artist, netId) {
+  return { id: uid(), name: name, artist: artist || '', url: '', source: 'online', origin: 'playlist', netId: netId, lrc: null, lrcRaw: '', modes: { warmup: true, ceremony: true, ending: true } };
+}
+function findImported(name, artist) {
+  return state.tracks.some(function (t) { return t.name === name && (t.artist || '') === (artist || ''); });
+}
+function matchAndAdd(songs, label, verify, modeKey) {
+  return new Promise(function (resolve) {
+  var total = songs.length, added = 0, failed = [], cursor = 0, running = 0;
+  var modeFlags = { warmup: false, ceremony: false, ending: false };
+  if (modeKey) modeFlags[modeKey] = true; else { modeFlags.warmup = true; modeFlags.ceremony = true; modeFlags.ending = true; }
+  function done() { finishImport(added, failed, label); resolve(); }
+  function processOne(idx) {
+    var s = songs[idx];
+    running++;
+    setImportStatus('正在匹配 ' + (idx + 1) + ' / ' + total + '：' + s.name);
+    searchNetease(s.name, s.artist).then(function (match) {
+      if (!match) { running--; failed.push(s.name); tick(); return; }
+      if (!verify) {
+        running--;
+        if (!findImported(s.name, s.artist)) {
+          var nt = makeImportTrack(s.name, s.artist, match.id);
+          if (s.qqmid) nt.qqmid = s.qqmid;
+          if (s.qqMediaMid) nt.qqMediaMid = s.qqMediaMid;
+          nt.modes = { warmup: modeFlags.warmup, ceremony: modeFlags.ceremony, ending: modeFlags.ending };
+          state.tracks.push(nt); added++;
+        }
+        tick();
+        return;
+      }
+      neteaseUrlForId(match.id).then(function () {
+        running--;
+        if (!findImported(s.name, s.artist)) {
+          var nt = makeImportTrack(s.name, s.artist, match.id);
+          if (s.qqmid) nt.qqmid = s.qqmid;
+          if (s.qqMediaMid) nt.qqMediaMid = s.qqMediaMid;
+          nt.modes = { warmup: modeFlags.warmup, ceremony: modeFlags.ceremony, ending: modeFlags.ending };
+          state.tracks.push(nt); added++;
+        }
+        tick();
+      }).catch(function () { running--; failed.push(s.name); tick(); });
+    }).catch(function () { running--; failed.push(s.name); tick(); });
+  }
+  function tick() {
+    while (running < 3 && cursor < total) processOne(cursor++);
+    if (running === 0 && cursor >= total) done();
+  }
+  tick();
+  });
+}
+function searchNetease(name, artist) {
+  var q = name + (artist ? ' ' + artist.split('/')[0] : '');
+  function attempt(n) {
+    return apiGetJSON('netease/search', { s: q }).then(function (data) {
+      var songs = data && data.result && data.result.songs;
+      if (!songs || !songs.length) {
+        if (n < 2) return new Promise(function (res) { setTimeout(function () { res(attempt(n + 1)); }, 800); });
+        return null;
+      }
+      for (var i = 0; i < songs.length; i++) { if (songs[i].name === name) return songs[i]; }
+      return songs[0];
+    }).catch(function (e) {
+      if (n < 2) return new Promise(function (res) { setTimeout(function () { res(attempt(n + 1)); }, 800); });
+      throw e;
+    });
+  }
+  return attempt(0);
+}
+function finishImport(added, failed, label, dupes) {
+  renderTrackList();
+  saveConfig();
+  updateStats();
+  var msg = label + '：新增 ' + added + ' 首';
+  if (dupes && dupes.length) msg += '；' + dupes.length + ' 首已存在，跳过重复';
+  if (failed.length) msg += '；' + failed.length + ' 首未匹配：' + failed.slice(0, 5).join('、') + (failed.length > 5 ? ' 等' : '');
+  if (!SERVER_MODE) msg += '（免安装模式仅免费歌曲可播放；付费歌曲请用「启动播放器.bat」启动后播放）';
+  setImportStatus(msg, false);
+  if (added) toast('歌单导入完成：新增 ' + added + ' 首');
+}
+
+
+/* ================= 粒子特效（tsparticles） ================= */
+var PARTICLE_PRESETS = {
+  off: null,
+  confetti: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 40, density: { enable: false } },
+      color: { value: ['#ff2d55', '#ffd166', '#06d6a0', '#4cc9f0', '#f72585', '#e8c86a'] },
+      shape: { type: 'square' },
+      size: { value: { min: 4, max: 10 } },
+      move: { enable: true, speed: 3, direction: 'bottom', random: true, outModes: { default: 'out' } },
+      opacity: { value: { min: 0.6, max: 1 } },
+      rotate: { value: { min: 0, max: 360 }, animation: { enable: true, speed: 15 } }
+    }
+  },
+  heart: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 24, density: { enable: false } },
+      color: { value: ['#ff2d55', '#ff6b81', '#ff8fa3', '#e8c86a'] },
+      shape: { type: 'char', options: { char: { value: ['❤', '💕', '💖'], font: 'Segoe UI Emoji' } } },
+      size: { value: { min: 12, max: 26 } },
+      move: { enable: true, speed: 1.5, direction: 'top', random: false, outModes: { default: 'out' } },
+      opacity: { value: 0.85 },
+      rotate: { value: { min: -30, max: 30 }, animation: { enable: true, speed: 8 } }
+    }
+  },
+  star: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 60, density: { enable: false } },
+      color: { value: ['#ffffff', '#fff3c4', '#e8c86a', '#d4e9ff'] },
+      shape: { type: 'star', options: { star: { sides: 5 } } },
+      size: { value: { min: 3, max: 7 }, animation: { enable: true, speed: 3, minimumValue: 1, sync: false } },
+      move: { enable: true, speed: 0.4, direction: 'none', random: true, outModes: { default: 'out' } },
+      opacity: { value: { min: 0.3, max: 1 }, animation: { enable: true, speed: 2, minimumValue: 0.1 } }
+    }
+  },
+  petal: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 20, density: { enable: false } },
+      color: { value: ['#ffb7c5', '#ffd6e0', '#ff8fab', '#ffffff'] },
+      shape: { type: 'char', options: { char: { value: ['🌸', '🌷', '💮'], font: 'Segoe UI Emoji' } } },
+      size: { value: { min: 12, max: 22 } },
+      move: { enable: true, speed: 1.2, direction: 'bottom', random: true, outModes: { default: 'out' } },
+      opacity: { value: 0.8 },
+      rotate: { value: { min: -45, max: 45 }, animation: { enable: true, speed: 6 } }
+    }
+  },
+  snow: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 60, density: { enable: false } },
+      color: { value: ['#ffffff'] },
+      shape: { type: 'circle' },
+      size: { value: { min: 2, max: 6 } },
+      move: { enable: true, speed: 0.8, direction: 'bottom', random: true, outModes: { default: 'out' } },
+      opacity: { value: { min: 0.4, max: 0.9 } }
+    }
+  },
+  fire: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 35, density: { enable: false } },
+      color: { value: ['#ff5722', '#ff9800', '#ffc107', '#ff3d00'] },
+      shape: { type: 'circle' },
+      size: { value: { min: 3, max: 8 } },
+      move: { enable: true, speed: 2.2, direction: 'top', random: true, outModes: { default: 'out' } },
+      opacity: { value: { min: 0.6, max: 1 }, animation: { enable: true, speed: 4, minimumValue: 0.2, sync: false } },
+      rotate: { value: { min: 0, max: 360 }, animation: { enable: true, speed: 10 } }
+    }
+  },
+  bubble: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 18, density: { enable: false } },
+      color: { value: ['#bfe3ff', '#e3f2ff', '#ffffff'] },
+      shape: { type: 'circle' },
+      size: { value: { min: 8, max: 18 } },
+      move: { enable: true, speed: 0.9, direction: 'top', random: true, outModes: { default: 'out' } },
+      opacity: { value: { min: 0.15, max: 0.4 } },
+      rotate: { value: { min: 0, max: 360 }, animation: { enable: true, speed: 3 } }
+    }
+  },
+  firefly: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 30, density: { enable: false } },
+      color: { value: ['#c8ff7a', '#e8ffb0', '#ffffaa'] },
+      shape: { type: 'circle' },
+      size: { value: { min: 2, max: 4 } },
+      move: { enable: true, speed: 0.5, direction: 'none', random: true, outModes: { default: 'out' } },
+      opacity: { value: { min: 0.2, max: 0.9 }, animation: { enable: true, speed: 2.5, minimumValue: 0.05, sync: false } }
+    }
+  },
+  gold: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 50, density: { enable: false } },
+      color: { value: ['#ffd700', '#ffe08a', '#fff3c4', '#e8c86a'] },
+      shape: { type: 'star', options: { star: { sides: 5 } } },
+      size: { value: { min: 2, max: 5 }, animation: { enable: true, speed: 3, minimumValue: 1, sync: false } },
+      move: { enable: true, speed: 0.8, direction: 'bottom', random: true, outModes: { default: 'out' } },
+      opacity: { value: { min: 0.4, max: 1 }, animation: { enable: true, speed: 2, minimumValue: 0.15, sync: false } }
+    }
+  },
+  balloon: {
+    fpsLimit: 60,
+    particles: {
+      number: { value: 10, density: { enable: false } },
+      color: { value: ['#ff6b81', '#ffd166', '#4cc9f0', '#c084fc'] },
+      shape: { type: 'char', options: { char: { value: ['🎈'], font: 'Segoe UI Emoji' } } },
+      size: { value: { min: 18, max: 30 } },
+      move: { enable: true, speed: 1.2, direction: 'top', random: true, outModes: { default: 'out' } },
+      opacity: { value: 0.9 },
+      rotate: { value: { min: -20, max: 20 }, animation: { enable: true, speed: 4 } }
+    }
+  }
+};
+function applyParticles() {
+  var el = $('particles');
+  if (!el) return;
+  if (!window.tsParticles) return;
+  var mdef = state.modeDefs[state.currentMode];
+  var pList = (mdef.particlesList && mdef.particlesList.length) ? mdef.particlesList : [mdef.particles || 'off'];
+  var preset = pList[Math.floor(Math.random() * pList.length)];
+  var p = PARTICLE_PRESETS[preset];
+  var options = {
+    fullScreen: { enable: false },
+    background: { color: { value: 'transparent' } },
+    detectRetina: true,
+    fpsLimit: p ? (p.fpsLimit || 60) : 60,
+    particles: p ? p.particles : {}
+  };
+  var existing = null;
+  window.tsParticles.dom().forEach(function (c) { if (c.id === 'particles') existing = c; });
+  if (existing) {
+    if (!p) { try { existing.destroy(); } catch (e) {} }
+    else if (typeof existing.updateOptions === 'function') { existing.updateOptions(options, true); }
+    else { window.tsParticles.load({ id: 'particles', options: options }).catch(function () {}); }
+  } else if (p) {
+    window.tsParticles.load({ id: 'particles', options: options }).catch(function () {});
+  }
+}
+
+/* ================= 播放器 ================= */
+function showScreen(name) {
+  $('screenSetup').classList.toggle('hidden', name !== 'setup');
+  $('screenPlayer').classList.toggle('hidden', name !== 'player');
+}
+function startPlayback() {
+  if (!state.photos.length) {
+    toast('请先选择照片文件夹（点击上方素材区选择）');
+    var dz = $('dropZone');
+    if (dz) {
+      dz.classList.add('drag');
+      dz.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(function () { dz.classList.remove('drag'); }, 1600);
+    }
+    return;
+  }
+  showScreen('player');
+  state.photoPaused = false;
+  state.lyricsOn = true;
+  state.shuffleMode = !!state.modeDefs[state.currentMode].shuffle;
+  $('btnShuffle').classList.toggle('on', state.shuffleMode);
+  $('btnLyrics').classList.remove('off');
+  $('btnPhotoPause').textContent = 'Ⅱ';
+  renderOverlay();
+  updateModeUI();
+  applyParticles();
+  playPhoto(0);
+  var q = buildQueue();
+  if (q.length) { state.trackIndex = 0; loadTrack(q[0]); }
+  else setTrackName('当前模式无音乐');
+  if (!SERVER_MODE && state.tracks.some(function (t) { return t.origin === 'playlist'; })) {
+    toast('歌单歌曲需本地服务模式：请用「启动播放器.bat」启动后播放');
+  } else if (window.tsParticles === undefined && state.modeDefs[state.currentMode].particles !== 'off') {
+    toast('未找到粒子库 tsparticles.min.js，粒子特效不可用');
+  } else if (!q.length) {
+    toast('当前环节没有音乐：请在设置里添加或导入');
+  }
+  showControls();
+  tryFullscreen();
+}
+function goSetup() {
+  clearTimeout(state.photoTimer);
+  state.audio.pause();
+  state.musicPlaying = false;
+  if (state.uiLocked) toggleLock();
+  if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+  showScreen('setup');
+  refreshPreflight();
+}
+// 某个环节实际会播放的曲目（与 buildQueue 同规则，供播放队列与演出预检共用）
+function tracksForMode(mk) {
+  var pref = state.modeMusicSource[mk] || 'all';
+  // 专属本地目录规则：该环节设置了专属本地音乐文件夹时，本地曲目只保留专属组
+  // （手动按环节导入的 manual+srcMode 也属于专属）；未设置专属目录才用通用导入/素材里的本地音乐
+  var dedicated = state.modeLocalDirs[mk] || '';
+  return state.tracks.filter(function (t) {
+    if (!t.modes[mk]) return false;
+    var kind = trackKind(t);
+    if (pref === 'playlist') return kind !== 'local';
+    if (pref === 'local' && kind !== 'local') return false;
+    if (kind === 'local' && dedicated) {
+      if (t.grp === ('modedir:' + mk)) return true;
+      if (t.grp === 'manual' && t.srcMode === mk) return true;
+      return false;
+    }
+    return true;
+  });
+}
+function buildQueue() {
+  var m = state.modeDefs[state.currentMode];
+  var q = tracksForMode(state.currentMode);
+  if (m.shuffle) shuffleArr(q);
+  state.queue = q;
+  return q;
+}
+/* 本地服务模式：服务器以 application/octet-stream 下发音频会导致浏览器无法解码。
+   播放前把相对路径文件取回并包成带正确音频 MIME 的 Blob（无需重编译 wedding-server.exe）。 */
+var AUDIO_BLOB_TYPES = { mp3: 'audio/mpeg', wav: 'audio/wav', ogg: 'audio/ogg', opus: 'audio/ogg', flac: 'audio/flac', m4a: 'audio/mp4', aac: 'audio/aac' };
+function revokeTrackMedia(t) {
+  if (!t) return;
+  var cur = state.queue ? state.queue[state.trackIndex] : null;
+  var isCurrent = cur === t;
+  if (t.url && t.url.indexOf('blob:') === 0 && !isCurrent) URL.revokeObjectURL(t.url);
+  if (t._blobUrl) {
+    if (isCurrent) return; // 正在播放：交给切歌时的旧 blob 清理
+    URL.revokeObjectURL(t._blobUrl);
+    t._blobUrl = null;
+  }
+}
+function preparePlayableUrl(t) {
+  // 只处理本地服务模式下、来自服务器文件夹（相对路径）的曲目
+  if (!(t.source === 'server' && t.url && t.url.indexOf('blob:') !== 0 && SERVER_MODE)) return Promise.resolve(t.url);
+  if (t._blobUrl) return Promise.resolve(t._blobUrl);
+  return fetch(t.url).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.blob();
+  }).then(function (b) {
+    var type = b.type || '';
+    if (type === '' || type === 'application/octet-stream') {
+      var ext = String(t.url.split('.').pop() || '').toLowerCase();
+      if (AUDIO_BLOB_TYPES[ext]) b = new Blob([b], { type: AUDIO_BLOB_TYPES[ext] });
+    }
+    // 切歌时释放上一个文件的 blob，避免几十 MB 的 flac 常驻内存
+    if (state._curBlobUrl) URL.revokeObjectURL(state._curBlobUrl);
+    t._blobUrl = URL.createObjectURL(b);
+    state._curBlobUrl = t._blobUrl;
+    return t._blobUrl;
+  });
+}
+function loadTrack(t) {
+  state.lrc = t.lrc || null;
+  state.activeLrc = -1;
+  state.musicPlaying = true;
+  renderLyrics();
+  // 视频播放中：先不自动播放音乐，等视频结束后恢复
+  if (isVideoShowing()) { state._pendingMusicTrack = t; return; }
+  state._pendingMusicTrack = null;
+  if (t.qqmid && SERVER_MODE) { loadQQTrack(t); return; }
+  if (t.netId) { loadNeteaseTrack(t); return; }
+  setTrackName(t.name + (t.artist ? ' - ' + t.artist : ''));
+  preparePlayableUrl(t).then(function (url) {
+    if (state.queue[state.trackIndex] !== t) return;
+    state.audio.src = url;
+    state.musicPlaying = true;
+    state.audio.play().catch(function () { toast('「' + t.name + '」播放失败，请检查地址或格式'); });
+  }).catch(function (e) {
+    if (state.queue[state.trackIndex] !== t) return;
+    toast((/404/.test(String(e && e.message))
+      ? ('「' + t.name + '」文件不存在（404）：请确认正在使用新版 wedding-server.exe（支持中文/空格文件名），或改用「🎵 选择音乐文件」导入')
+      : ('「' + t.name + '」读取失败：' + e.message)));
+    setTimeout(function () { if (state.queue.length) nextTrack(); }, 1500);
+  });
+}
+function loadQQTrack(t) {
+  t._retried = false;
+  setTrackName(t.name + (t.artist ? ' - ' + t.artist : ''));
+  fetch('/api/qq/playurl?songmid=' + encodeURIComponent(t.qqmid) + '&mediaMid=' + encodeURIComponent(t.qqMediaMid || '') + '&cookie=' + encodeURIComponent(state.qqCookie))
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (state.queue[state.trackIndex] !== t) return;
+      if (!d || !d.url) {
+        toast('QQ源无法播放' + (d && d.reason ? '（' + d.reason + '）' : '') + '，改用网易云');
+        loadNeteaseTrack(t);
+        return;
+      }
+      state.audio.src = d.url;
+      state.musicPlaying = true;
+      state.audio.play().catch(function (e) {
+        if (e && e.name === 'NotAllowedError') { toast('点击 ▶ 或按空格键开始播放音乐'); }
+        else { toast('QQ 源播放失败，改用网易云'); loadNeteaseTrack(t); }
+      });
+    }).catch(function () { loadNeteaseTrack(t); });
+  if (!t.lrc || !t.lrc.length) fetchQQLyric(t);
+}
+function fetchQQLyric(t) {
+  if (!t.qqmid || !SERVER_MODE) { fetchNeteaseLyric(t); return; }
+  fetch('/api/qq/lyric?songmid=' + encodeURIComponent(t.qqmid)).then(function (r) { return r.json(); }).then(function (d) {
+    if (d && d.lyric) {
+      t.lrc = parseLRC(d.lyric, d.trans);
+      t.lrcRaw = d.lyric;
+      if (state.queue[state.trackIndex] === t) {
+        state.lrc = t.lrc;
+        state.activeLrc = -1;
+        setTrackName(t.name + (t.artist ? ' - ' + t.artist : ''));
+        renderLyrics();
+      }
+      renderTrackList();
+    } else {
+      fetchNeteaseLyric(t);
+    }
+  }).catch(function () { fetchNeteaseLyric(t); });
+}
+function loadNeteaseTrack(t) {
+  t._retried = false;
+  setTrackName(t.name + (t.artist ? ' - ' + t.artist : ''));
+  resolveNeteaseUrl(t).then(function (r) {
+    if (state.queue[state.trackIndex] !== t) return;
+    state.audio.src = r.url;
+    state.musicPlaying = true;
+    state.audio.play().catch(function (e) {
+      if (e && e.name === 'NotAllowedError') { toast('点击 ▶ 或按空格键开始播放音乐'); }
+      else toast('「' + t.name + '」播放失败');
+    });
+    if (r.trialEnd) toast('🎧 VIP 试听片段（' + Math.round(r.trialEnd) + ' 秒），登录网易云后填 Cookie 可完整播放');
+  }).catch(function () {
+    if (state.queue[state.trackIndex] !== t) return;
+    toast('「' + t.name + '」暂无法播放，自动跳过' + (SERVER_MODE ? '' : '（歌单歌曲请用「启动播放器.bat」启动后播放）'));
+    setTimeout(nextTrack, 900);
+  });
+  if (!t.lrc || !t.lrc.length) fetchNeteaseLyric(t);
+  var nxt = state.queue[(state.trackIndex + 1) % state.queue.length];
+  if (nxt && nxt.netId && (!nxt._url || nxt._urlExpire < Date.now())) {
+    neteaseUrlForId(nxt.netId).then(function (r) { nxt._url = r.url; nxt._trialEnd = r.trialEnd; nxt._urlExpire = Date.now() + 14 * 60 * 1000; }).catch(function () {});
+  }
+}
+function resolveNeteaseUrl(t) {
+  if (t._url && t._urlExpire > Date.now()) return Promise.resolve({ url: t._url, trialEnd: t._trialEnd || 0 });
+  return neteaseUrlForId(t.netId).then(function (r) {
+    t._url = r.url;
+    t._trialEnd = r.trialEnd;
+    t._urlExpire = Date.now() + 14 * 60 * 1000;
+    if (r.trialEnd) { t.trial = true; renderTrackList(); }
+    return r;
+  });
+}
+function neteaseUrlForId(id) {
+  function attempt(n) {
+    return apiGetJSON('netease/url', { id: id }).then(function (data) {
+      var d = data && data.data && data.data[0];
+      if (!d || !d.url) {
+        if (n < 2) return new Promise(function (res) { setTimeout(function () { res(attempt(n + 1)); }, 800); });
+        throw new Error('not available');
+      }
+      var trialEnd = 0;
+      if (d.freeTrialInfo && d.freeTrialInfo.end && d.freeTrialInfo.end > 0 && d.freeTrialInfo.fragmentType === -1) {
+        trialEnd = d.freeTrialInfo.end;
+      }
+      return { url: d.url, trialEnd: trialEnd };
+    }).catch(function (e) {
+      if (n < 2) return new Promise(function (res) { setTimeout(function () { res(attempt(n + 1)); }, 800); });
+      throw e;
+    });
+  }
+  return attempt(0);
+}
+function fetchNeteaseLyric(t) {
+  apiGetJSON('netease/lyric', { id: t.netId }).then(function (data) {
+    var lyr = data && data.lrc && data.lrc.lyric;
+    if (!lyr) return;
+    var tlyr = data && data.tlyric && data.tlyric.lyric;
+    t.lrc = parseLRC(lyr, tlyr);
+    t.lrcRaw = lyr;
+    if (state.queue[state.trackIndex] === t) {
+      state.lrc = t.lrc;
+      state.activeLrc = -1;
+      setTrackName(t.name + (t.artist ? ' - ' + t.artist : ''));
+      renderLyrics();
+    }
+    renderTrackList();
+  }).catch(function () {});
+}
+function setTrackName(n) { var cur = state.queue[state.trackIndex]; $('trackName').textContent = n + (state.lrc && state.lrc.length && !isInstrumental(cur) ? ' ♪' : ''); }
+function nextTrack() {
+  if (!state.queue.length) return;
+  if (state.shuffleMode && state.queue.length > 1) {
+    state.trackIndex++;
+    if (state.trackIndex >= state.queue.length) {
+      // 一轮播完，重新洗牌再开始
+      shuffleArr(state.queue);
+      state.trackIndex = 0;
+    }
+  } else {
+    state.trackIndex = (state.trackIndex + 1) % state.queue.length;
+  }
+  loadTrack(state.queue[state.trackIndex]);
+}
+function prevTrack() {
+  if (!state.queue.length) return;
+  if (state.shuffleMode && state.queue.length > 1) {
+    state.trackIndex--;
+    if (state.trackIndex < 0) state.trackIndex = state.queue.length - 1;
+  } else {
+    state.trackIndex = (state.trackIndex - 1 + state.queue.length) % state.queue.length;
+  }
+  loadTrack(state.queue[state.trackIndex]);
+}
+function toggleShuffle() {
+  state.shuffleMode = !state.shuffleMode;
+  $('btnShuffle').classList.toggle('on', state.shuffleMode);
+  toast(state.shuffleMode ? '🔀 已开启随机播放' : '已关闭随机播放');
+  showControls();
+}
+function toggleMusic() {
+  if (state.audio.paused) { state.musicPlaying = true; state.audio.play().catch(function () {}); }
+  else { state.musicPlaying = false; state.audio.pause(); }
+}
+function updateMusicUI() {
+  var a = state.audio;
+  if (a.duration && isFinite(a.duration)) {
+    $('musicBar').style.width = (a.currentTime / a.duration * 100) + '%';
+    $('musicTime').textContent = fmt(a.currentTime) + ' / ' + fmt(a.duration);
+  } else {
+    $('musicBar').style.width = '0%';
+    $('musicTime').textContent = '--:--';
+  }
+}
+function seekMusic(e) {
+  var a = state.audio;
+  if (!a.duration || !isFinite(a.duration)) return;
+  var r = $('musicProgress').getBoundingClientRect();
+  a.currentTime = (e.clientX - r.left) / r.width * a.duration;
+}
+
+/* 照片 */
+function photoElAt(pos) {
+  var n = state.photos.length;
+  if (!n) return null;
+  var i = ((pos % n) + n) % n;
+  return state.photos[state.photoOrder ? state.photoOrder[i] : i];
+}
+// 照片随机：为该环节生成一轮洗牌顺序（一轮内不重复；照片数量或环节变了才重新洗牌）
+function rebuildPhotoOrder() {
+  var m = state.modeDefs[state.currentMode];
+  var n = state.photos.length;
+  if (!m.photoShuffle || n <= 1) { state.photoOrder = null; state.photoOrderMode = ''; return; }
+  if (state.photoOrder && state.photoOrderMode === m.key && state.photoOrder.length === n) return;
+  var arr = [];
+  for (var i = 0; i < n; i++) arr.push(i);
+  shuffleArr(arr);
+  state.photoOrder = arr;
+  state.photoOrderMode = m.key;
+}
+function playPhoto(i) {
+  if (!state.photos.length) return;
+  var n = state.photos.length;
+  rebuildPhotoOrder();
+  state.photoIndex = ((i % n) + n) % n;
+  var cur = photoElAt(state.photoIndex);
+  if (!cur || cur.type !== 'video') {
+    // 切回照片：恢复视频期间暂停的音乐、粒子与歌词
+    var pendingTrack = state._pendingMusicTrack;
+    state._pendingMusicTrack = null;
+    if (pendingTrack) {
+      loadTrack(pendingTrack);
+    } else {
+      resumeMusicAfterVideo();
+    }
+    resumeParticles();
+    if (state._videoHideLyrics) {
+      state._videoHideLyrics = false;
+      var lp = $('lyricsPanel');
+      if (lp && state.lyricsOn && state.modeDefs[state.currentMode].lyrics) {
+        lp.classList.remove('hidden');
+        renderLyrics();
+      }
+    }
+  }
+  showLayer();
+  restartTimer();
+  updateCounter();
+}
+function restartTimer() {
+  clearTimeout(state.photoTimer);
+  if (state.photoPaused) return;
+  var cur = photoElAt(state.photoIndex);
+  if (cur && cur.type === 'video') return; // 视频由自身时长控制，不走定时器
+  if (state.photos.length <= 1) return; // 只有一张素材：不轮播
+  var dur = state.modeDefs[state.currentMode].photoDur;
+  state.photoTimer = setTimeout(function () { playPhoto(state.photoIndex + 1); }, dur * 1000);
+}
+function showLayer() {
+  var m = state.modeDefs[state.currentMode];
+  var oldLayer = els.layers[state.activeLayer];
+  var newLayer = els.layers[1 - state.activeLayer];
+  state.activeLayer = 1 - state.activeLayer;
+  var cur = photoElAt(state.photoIndex);
+  var isVideo = !!(cur && cur.type === 'video');
+  var transList = (m.transitions && m.transitions.length) ? m.transitions : [m.transition || 'fade'];
+  var trans = isVideo ? 'fade' : transList[Math.floor(Math.random() * transList.length)];
+  newLayer.className = 'layer transition-' + trans;
+  newLayer.classList.toggle('is-video', isVideo);
+  newLayer.classList.toggle('is-photo', !isVideo);
+  var img = newLayer.querySelector('img');
+  var vid = newLayer.querySelector('video');
+  img.style.objectFit = state.cover;
+  vid.style.objectFit = state.cover;
+  newLayer.style.zIndex = 2;
+  oldLayer.style.zIndex = 1;
+  newLayer.style.setProperty('--kdur', (Math.max(m.photoDur, 4) * 1000) + 'ms');
+  var seq = (state.layerSeq = (state.layerSeq || 0) + 1);
+  var shown = false;
+  var doShow = function () {
+    if (shown || state.layerSeq !== seq) return;
+    shown = true;
+    oldLayer.style.transition = 'opacity 0.28s ease';
+    oldLayer.style.opacity = '0';
+    setTimeout(function () {
+      if (state.layerSeq !== seq) return;
+      newLayer.style.transition = 'none';
+      newLayer.style.opacity = '0';
+      void newLayer.offsetWidth;
+      newLayer.style.transition = 'opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+      if (!isVideo) {
+        img.style.animation = 'none';
+        void img.offsetWidth;
+        img.style.animation = '';
+      }
+      newLayer.style.opacity = '1';
+      if (isVideo) { startVideoPlayback(vid); }
+    }, 280);
+  };
+  if (isVideo) {
+    vid.pause();
+    vid.removeAttribute('src');
+    vid.load();
+    vid.onloadeddata = function () {
+      if (vid.videoWidth === 0 || vid.videoHeight === 0) {
+        // 视频编码不受支持（如 H.265/HEVC），只有音频没有画面
+        toast('⚠ 视频「' + cur.name + '」画面无法解码（可能是 H.265/HEVC，请转成 H.264 MP4），已跳过');
+        setTimeout(nextPhotoItem, 1600);
+        return;
+      }
+      doShow();
+    };
+    vid.onerror = function () { toast('视频无法播放，跳过'); nextPhotoItem(); };
+    vid.src = cur.url;
+    vid.onended = function () { nextPhotoItem(); };
+    // 视频期间：暂停音乐、粒子，并隐藏歌词
+    pauseMusicForVideo();
+    stopParticles();
+    var lp = $('lyricsPanel');
+    if (lp && !lp.classList.contains('hidden')) {
+      lp.classList.add('hidden');
+      state._videoHideLyrics = true;
+    }
+    $('photoCounter').textContent = (state.photoIndex + 1) + ' / ' + state.photos.length;
+    return;
+  }
+  // 每张照片切换时重新随机粒子效果
+  applyParticles();
+  img.onload = doShow;
+  img.src = cur.url;
+  if (img.complete) doShow();
+  var ni = (state.photoIndex + 1) % state.photos.length;
+  var niItem = photoElAt(ni);
+  if (niItem && niItem.type !== 'video') {
+    var pre = new Image();
+    pre.src = niItem.url;
+  }
+}
+function isVideoShowing() {
+  var photoCur = photoElAt(state.photoIndex);
+  return !!(photoCur && photoCur.type === 'video');
+}
+function startVideoPlayback(vid) {
+  vid.muted = false;
+  vid.play().catch(function () { toast('视频播放失败，跳过'); nextPhotoItem(); });
+}
+function nextPhotoItem() {
+  if (!state.photos.length) return;
+  clearTimeout(state.photoTimer);
+  playPhoto(state.photoIndex + 1);
+}
+function pauseMusicForVideo() {
+  if (state.audio && state.musicPlaying) {
+    state._videoPausedMusic = true;
+    state.audio.pause();
+  } else {
+    state._videoPausedMusic = false;
+  }
+  $('btnPlayPause').textContent = '▶';
+}
+function resumeMusicAfterVideo() {
+  if (state._videoPausedMusic) {
+    state._videoPausedMusic = false;
+    state.musicPlaying = true;
+    if (state.audio) state.audio.play().catch(function () {});
+    $('btnPlayPause').textContent = '⏸';
+  }
+}
+function stopParticles() {
+  if (window.tsParticles) {
+    try {
+      window.tsParticles.dom().forEach(function (c) {
+        if (c.id === 'particles') { c.pause(); }
+      });
+    } catch (e) {}
+  }
+  var el = $('particles');
+  if (el) el.style.display = 'none';
+}
+function resumeParticles() {
+  var el = $('particles');
+  if (el) el.style.display = '';
+  if (window.tsParticles) {
+    try {
+      window.tsParticles.dom().forEach(function (c) {
+        if (c.id === 'particles') { if (c.play) c.play(); }
+      });
+    } catch (e) {}
+  }
+}
+function togglePhotoPause() {
+  state.photoPaused = !state.photoPaused;
+  $('btnPhotoPause').textContent = state.photoPaused ? '▶' : 'Ⅱ';
+  if (!state.photoPaused) restartTimer();
+  showControls();
+}
+function updateCounter() { $('photoCounter').textContent = (state.photoIndex + 1) + ' / ' + state.photos.length; }
+
+/* 歌词 */
+var INST_KEYWORDS = ['纯音乐', '轻音乐', '钢琴曲', '钢琴', '器乐', '伴奏', '演奏', 'instrumental', 'piano', '演奏曲'];
+var INST_PLACEHOLDER_RE = /纯音乐|请欣赏|没有填词|无歌词|仅供欣赏|instrumental|纯音/i;
+function isInstrumental(t) {
+  if (!t) return false;
+  var s = ((t.name || '') + ' ' + (t.artist || '')).toLowerCase();
+  for (var i = 0; i < INST_KEYWORDS.length; i++) {
+    if (s.indexOf(INST_KEYWORDS[i].toLowerCase()) >= 0) return true;
+  }
+  if (t.lrc && t.lrc.length) {
+    var real = t.lrc.filter(function (l) { return !INST_PLACEHOLDER_RE.test(l.text); });
+    if (!real.length) return true;
+  }
+  return false;
+}
+function renderLyrics() {
+  var panel = $('lyricsPanel'), box = $('lyricsBox');
+  var cur = state.queue[state.trackIndex];
+  var photoCur = photoElAt(state.photoIndex);
+  var videoPlayingNow = !!(photoCur && photoCur.type === 'video' && state._videoHideLyrics);
+  var show = !videoPlayingNow && state.lyricsOn && state.modeDefs[state.currentMode].lyrics && state.lrc && state.lrc.length && !isInstrumental(cur);
+  panel.classList.toggle('hidden', !show);
+  if (!show) { state.lrcEls = null; return; }
+  box.innerHTML = '';
+  var frag = document.createDocumentFragment();
+  state.lrc.forEach(function (l) {
+    var d = document.createElement('div');
+    d.className = 'lrc-line';
+    var s1 = document.createElement('span');
+    s1.className = 'lrc-orig';
+    s1.textContent = l.text;
+    d.appendChild(s1);
+    if (l.trans && l.trans !== l.text) {
+      var s2 = document.createElement('span');
+      s2.className = 'lrc-trans';
+      s2.textContent = l.trans;
+      d.appendChild(s2);
+    }
+    frag.appendChild(d);
+  });
+  box.appendChild(frag);
+  state.lrcEls = box.children;
+}
+function syncLyrics() {
+  if (!state.lrc || !state.lrcEls || $('lyricsPanel').classList.contains('hidden')) return;
+  var t = state.audio.currentTime, idx = -1;
+  for (var i = 0; i < state.lrc.length; i++) { if (state.lrc[i].t <= t) idx = i; else break; }
+  if (idx === state.activeLrc) return;
+  state.activeLrc = idx;
+  for (var j = 0; j < state.lrcEls.length; j++) {
+    state.lrcEls[j].classList.toggle('active', j === idx);
+  }
+}
+function toggleLyrics() {
+  state.lyricsOn = !state.lyricsOn;
+  $('btnLyrics').classList.toggle('off', !state.lyricsOn);
+  renderLyrics();
+}
+
+/* 模式 */
+function stopAllVideos() {
+  els.layers.forEach(function (l) {
+    var v = l.querySelector('video');
+    if (v) {
+      v.pause();
+      v.removeAttribute('src');
+      v.load();
+    }
+  });
+  // 恢复视频期间暂停的音乐与粒子
+  resumeMusicAfterVideo();
+  resumeParticles();
+  if (state._videoHideLyrics) {
+    state._videoHideLyrics = false;
+    var lp = $('lyricsPanel');
+    if (lp && state.lyricsOn) lp.classList.remove('hidden');
+  }
+}
+function setMode(key) {
+  if (key === state.currentMode) return;
+  state.currentMode = key;
+  // 切模式：停止当前播放的视频，恢复音乐/粒子/歌词
+  stopAllVideos();
+  clearTimeout(state.photoTimer);
+  updateModeUI();
+  renderOverlay();
+  applyParticles();
+  restartTimer();
+  var needsRebuild = loadModeAssets(key);
+  if (!needsRebuild) {
+    var q = buildQueue();
+    if (q.length) { state.trackIndex = 0; loadTrack(q[0]); }
+    else toast('该模式未分配音乐，继续播放当前音乐');
+  }
+  renderLyrics();
+  toast('已切换到「' + state.modeDefs[key].name + '」模式');
+}
+// 切换模式时加载该模式专属的素材文件夹与歌单
+// 返回 true 表示有异步加载进行中（完成后会统一重建队列并播放）
+function loadModeAssets(key) {
+  var pending = [];
+  // 该模式的素材目录：有定制用定制；没有则用通用目录
+  var dir = state.modeDirs[key] || state.genericDir || 'input';
+  // 1) 素材文件夹：与当前不同 → 异步加载
+  if (dir && dir !== state.photoDirName) {
+    pending.push(loadDirFromServer(dir).then(function (ok) {
+      if (ok) {
+        updateStats();
+        state.photoIndex = 0;
+        state.photoPaused = false;
+        $('btnPhotoPause').textContent = 'Ⅱ';
+        playPhoto(0);
+        updateCounter();
+        toast('已加载「' + state.modeDefs[key].name + '」素材' + (state.modeDirs[key] ? '' : '（通用）'));
+      } else {
+        toast('「' + state.modeDefs[key].name + '」素材文件夹不存在或为空：' + dir);
+      }
+    }));
+  }
+  // 2) 歌单：有配置 → 异步导入（该环节音乐来源=本地时不导入歌单）
+  var pls = ((state.modeMusicSource[key] || 'all') === 'local') ? [] : modePlaylistList(key);
+  if (pls && pls.length) {
+    pending.push(new Promise(function (resolve) {
+      autoImportModePlaylists(key, function () { resolve(); });
+    }));
+  }
+  // 3) 该环节专属的本地音乐文件夹（服务器模式）
+  if (SERVER_MODE && state.modeLocalDirs[key]) {
+    pending.push(new Promise(function (resolve) {
+      loadModeLocalDir(key).then(function () { resolve(); });
+    }));
+  }
+  if (pending.length) {
+    // 全部异步完成后，重建队列并播放该模式第一首
+    Promise.all(pending).then(function () {
+      if (state.currentMode !== key) return;
+      var q = buildQueue();
+      if (q.length) { state.trackIndex = 0; loadTrack(q[0]); }
+      else toast('该模式未分配音乐，继续播放当前音乐');
+      renderLyrics();
+    });
+    return true;
+  }
+  return false;
+}
+function cycleMode() {
+  var i = MODE_KEYS.indexOf(state.currentMode);
+  setMode(MODE_KEYS[(i + 1) % MODE_KEYS.length]);
+}
+function updateModeUI() {
+  var d = state.modeDefs[state.currentMode];
+  $('btnMode').textContent = '模式：' + d.name;
+  $('modeTag').textContent = (d.icon ? d.icon + ' ' : '') + d.name;
+}
+function renderOverlay() {
+  var o = $('modeOverlay');
+  var txt = state.modeDefs[state.currentMode].overlay;
+  if (txt) { o.textContent = txt; o.classList.add('show'); }
+  else o.classList.remove('show');
+}
+
+/* 控制条 / 全屏 */
+function showControls() {
+  if (state.uiLocked) return;
+  $('controls').classList.add('show');
+  $('topInfo').classList.add('show');
+  clearTimeout(state.controlsTimer);
+  state.controlsTimer = setTimeout(hideControls, 3200);
+}
+function hideControls() {
+  if (state.photoPaused) return;
+  $('controls').classList.remove('show');
+  $('topInfo').classList.remove('show');
+}
+function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+  else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () { toast('无法进入全屏'); });
+}
+function tryFullscreen() {
+  if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function () {});
+}
+function onKey(e) {
+  if (!$('qrModal').classList.contains('hidden')) {
+    if (e.key === 'Escape') closeQrModal();
+    return;
+  }
+  if (!$('lrcModal').classList.contains('hidden')) {
+    if (e.key === 'Escape') closeLrcModal();
+    return;
+  }
+  if ($('screenPlayer').classList.contains('hidden')) return;
+  var k = e.key;
+  if (k === ' ') { e.preventDefault(); toggleMusic(); }
+  else if (k === 'ArrowLeft') playPhoto(state.photoIndex - 1);
+  else if (k === 'ArrowRight') playPhoto(state.photoIndex + 1);
+  else if (k === 'p' || k === 'P') togglePhotoPause();
+  else if (k === 'm' || k === 'M') cycleMode();
+  else if (k === 'l' || k === 'L') toggleLyrics();
+  else if (k === 'n' || k === 'N') nextTrack();
+  else if (k === 's' || k === 'S') toggleShuffle();
+  else if (k === 'f' || k === 'F') toggleFullscreen();
+}
+
+/* ================= 事件绑定 ================= */
+function wireEvents() {
+  $('dropZone').addEventListener('click', pickNew);
+  $('fileInputFolder').addEventListener('change', function () {
+    if (this.files && this.files.length) { ingestFiles(this.files); this.value = ''; }
+  });
+  $('btnPickMusicDir').addEventListener('click', pickMusicDir);
+  $('btnPickMusicFiles').addEventListener('click', function () { $('fileInputMusicFiles').click(); });
+  $('fileInputMusicDir').addEventListener('change', function () {
+    if (this.files && this.files.length) {
+      var mk = _musicPickMode;
+      _musicPickMode = null;
+      importMusicFolderFiles(this.files, mk);
+      this.value = '';
+    }
+  });
+  $('fileInputMusicFiles').addEventListener('change', function () {
+    if (this.files && this.files.length) { addLocalMusicFiles(this.files, null); this.value = ''; }
+  });
+  $('dropZone').addEventListener('dragover', function (e) { e.preventDefault(); this.classList.add('drag'); });
+  $('dropZone').addEventListener('dragleave', function () { this.classList.remove('drag'); });
+  $('dropZone').addEventListener('drop', function (e) {
+    e.preventDefault();
+    this.classList.remove('drag');
+    if (e.dataTransfer && e.dataTransfer.items && e.dataTransfer.items.length) dropFiles(e.dataTransfer.items);
+  });
+  $('btnAddOnline').addEventListener('click', addOnlineTrack);
+  $('onlineUrl').addEventListener('keydown', function (e) { if (e.key === 'Enter') addOnlineTrack(); });
+  $('btnImportPlaylist').addEventListener('click', importPlaylist);
+  $('playlistUrl').addEventListener('keydown', function (e) { if (e.key === 'Enter') importPlaylist(); });
+  $('btnImportText').addEventListener('click', importPlaylistText);
+  $('neteaseCookie').addEventListener('change', function () {
+    state.neteaseCookie = this.value.trim();
+    saveConfig();
+    toast(state.neteaseCookie ? '网易云 Cookie 已保存' : '网易云 Cookie 已清空');
+  });
+  $('btnQrLogin').addEventListener('click', startQrLogin);
+  $('btnQrClose').addEventListener('click', closeQrModal);
+  $('btnLogout').addEventListener('click', logoutNetease);
+  $('qqCookie').addEventListener('change', function () {
+    state.qqCookie = this.value.trim();
+    saveConfig();
+    updateQqCookieStatus();
+    toast(state.qqCookie ? 'QQ音乐 Cookie 已识别，播放时自动使用' : 'QQ音乐 Cookie 已清空');
+  });
+  $('trackList').addEventListener('click', trackListClick);
+  $('modeCards').addEventListener('input', modeCardsInput);
+  $('modeCards').addEventListener('click', modeCardsChipClick);
+  $('modeCards').addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-act]');
+    if (!btn) return;
+    var act = btn.getAttribute('data-act');
+    var mode = btn.getAttribute('data-mode');
+    if (act === 'pickdir') { openDirPicker(mode); }
+    else if (act === 'cleardir') { clearModeDir(mode); }
+    else if (act === 'picklocaldir') { pickModeLocalDir(mode); }
+    else if (act === 'clearlocaldir') { clearModeLocalDir(mode); }
+  });
+  $('dirList').addEventListener('click', dirListClick);
+  $('btnDirCancel').addEventListener('click', closeDirPicker);
+  $('btnDirUseDefault').addEventListener('click', function () {
+    if (_dirPickerMode) { clearModeDir(_dirPickerMode); }
+    closeDirPicker();
+  });
+  $('coverSelect').addEventListener('change', function () {
+    state.cover = this.value;
+    saveConfig();
+    if (!$('screenPlayer').classList.contains('hidden')) {
+      els.layers.forEach(function (l) { l.querySelector('img').style.objectFit = state.cover; });
+    }
+  });
+  $('btnStart').addEventListener('click', startPlayback);
+  $('btnSetup').addEventListener('click', goSetup);
+  $('btnMode').addEventListener('click', cycleMode);
+  $('btnPrevTrack').addEventListener('click', prevTrack);
+  $('btnPlayPause').addEventListener('click', toggleMusic);
+  $('btnNextTrack').addEventListener('click', nextTrack);
+  $('btnShuffle').addEventListener('click', toggleShuffle);
+  $('btnPrevPhoto').addEventListener('click', function () { playPhoto(state.photoIndex - 1); });
+  $('btnNextPhoto').addEventListener('click', function () { playPhoto(state.photoIndex + 1); });
+  $('btnPhotoPause').addEventListener('click', togglePhotoPause);
+  $('btnLyrics').addEventListener('click', toggleLyrics);
+  $('btnFullscreen').addEventListener('click', toggleFullscreen);
+  $('btnLock').addEventListener('click', toggleLock);
+  $('lockBadge').addEventListener('click', toggleLock);
+  $('musicProgress').addEventListener('click', seekMusic);
+  $('btnLrcSave').addEventListener('click', saveLrcModal);
+  $('btnLrcCancel').addEventListener('click', closeLrcModal);
+  document.addEventListener('mousemove', showControls);
+  document.addEventListener('keydown', onKey);
+
+  state.audio.addEventListener('play', function () { $('btnPlayPause').textContent = '⏸'; });
+  state.audio.addEventListener('pause', function () { $('btnPlayPause').textContent = '▶'; });
+  state.audio.addEventListener('ended', function () {
+    var t = state.queue[state.trackIndex];
+    if (t && t.trial && t._trialEnd) toast('🎧 VIP 试听片段（' + Math.round(t._trialEnd) + ' 秒）播放完毕，自动切换下一首');
+    nextTrack();
+  });
+  state.audio.addEventListener('error', function () {
+    var t = state.queue[state.trackIndex];
+    if (t && t.qqmid && state.qqCookie && SERVER_MODE && !t._retried) {
+      t._retried = true;
+      loadQQTrack(t);
+      return;
+    }
+    if (t && t.netId && !t._retried) {
+      t._retried = true;
+      t._url = null; t._urlExpire = 0;
+      loadNeteaseTrack(t);
+      return;
+    }
+    if (state.queue.length) { toast('音乐播放出错，自动跳到下一首'); setTimeout(nextTrack, 1200); }
+  });
+  state.audio.addEventListener('timeupdate', function () { updateMusicUI(); syncLyrics(); });
+  state.audio.addEventListener('loadedmetadata', updateMusicUI);
+}
+
+/* ================= 启动 ================= */
+function updateQqCookieStatus() {
+  var el = $('qqCookieStatus');
+  if (!el) return;
+  var c = state.qqCookie || '';
+  if (!c) { el.textContent = '未填写（QQ源需用「启动播放器.bat」本地服务模式才生效）'; el.style.color = '#9a9aa6'; return; }
+  var preview = c.length > 40 ? c.slice(0, 40) + '…' : c;
+  var uinM = c.match(/uin\s*=\s*"?o?(\d+)/) || c.match(/"name":"uin","value":"(\d+)"/) || c.match(/uin\s*:\s*"?o?(\d+)/);
+  var tokM = c.match(/qqmusic_key\s*=\s*([^;,\s]+)/) || c.match(/qm_keyst\s*=\s*([^;,\s]+)/) || c.match(/"name":"qqmusic_key","value":"([^"]+)"/) || c.match(/"name":"qm_keyst","value":"([^"]+)"/);
+  if (uinM && tokM) {
+    el.textContent = '✓ 已识别：uin=' + uinM[1].slice(0, 4) + '***，token 已检测到（VIP 可完整播放）';
+    el.style.color = '#9ecb8a';
+  } else if (uinM) {
+    el.textContent = '⚠ 有 uin 但缺少 qqmusic_key / qm_keyst（已粘贴：' + preview + '）';
+    el.style.color = '#e8b85a';
+  } else {
+    el.textContent = '⚠ 未识别到 uin / qqmusic_key（已粘贴：' + preview + '）。格式应为 uin=269995137; qqmusic_key=Q_H_L_xxx';
+    el.style.color = '#e08a8a';
+  }
+}
+function updateStats() {
+  $('statPhotos').textContent = '照片 ' + state.photos.length;
+  $('statTracks').textContent = '音乐 ' + state.tracks.length;
+  var lrcCount = state.tracks.filter(function (t) { return t.lrc && t.lrc.length; }).length;
+  $('statLrc').textContent = '歌词 ' + lrcCount;
+  renderPreflight();
+}
+/* ================= 演出预检 ================= */
+var preflightScanCache = {};   // 目录 -> { photos, audios }
+var preflightScanToken = 0;
+function modePhotoDir(k) {
+  return state.modeDirs[k] || state.genericDir || state.photoDirName || '';
+}
+function preflightCounts(dir) {
+  return Object.prototype.hasOwnProperty.call(preflightScanCache, dir) ? preflightScanCache[dir] : null;
+}
+// 某环节预计可播放的音乐数：专属目录按扫描结果统计，其余用已加载曲目
+function modeMusicCount(k) {
+  var pref = state.modeMusicSource[k] || 'all';
+  var dedicated = state.modeLocalDirs[k] || '';
+  var loaded = tracksForMode(k);
+  var localLoaded = loaded.filter(function (t) { return trackKind(t) === 'local'; }).length;
+  var online = loaded.length - localLoaded;
+  var local;
+  if (pref === 'playlist') local = 0;
+  else if (dedicated) {
+    var c = preflightCounts(dedicated);
+    local = c ? c.audios : localLoaded;
+  } else local = localLoaded;
+  return { total: local + online, online: online, pref: pref };
+}
+function renderPreflight() {
+  var el = $('preflight');
+  if (!el) return;
+  var html = '<div class="pf-head"><span class="pf-title">🎬 演出预检</span>'
+    + '<button type="button" id="btnPreflightRefresh" class="pf-refresh">🔄 重新检查</button></div>'
+    + '<div class="pf-grid">';
+  MODE_KEYS.forEach(function (k) {
+    var d = state.modeDefs[k];
+    var mi = modeMusicCount(k);
+    var dir = modePhotoDir(k);
+    var photoTxt, photoKnown = true, photoOk = true;
+    if (SERVER_MODE) {
+      if (!dir) { photoTxt = '未设置素材目录'; photoOk = false; }
+      else {
+        var c = preflightCounts(dir);
+        if (c) { photoTxt = c.photos + ' 张'; photoOk = c.photos > 0; }
+        else { photoTxt = '检查中…'; photoKnown = false; }
+      }
+    } else {
+      if (k === state.currentMode) { photoTxt = state.photos.length + ' 张'; photoOk = state.photos.length > 0; }
+      else { photoTxt = '进入环节时加载'; photoKnown = false; }
+    }
+    var srcLabel = { all: '全部', playlist: '歌单/在线', local: '本地' }[mi.pref];
+    var musicTxt = mi.total + ' 首' + (mi.online ? '（含在线 ' + mi.online + ' 首）' : '');
+    var bad = (photoKnown && !photoOk) || mi.total === 0;
+    html += '<div class="pf-item' + (bad ? ' pf-bad' : '') + '">'
+      + '<div class="pf-name">' + (d.icon ? d.icon + ' ' : '') + d.name + '环节</div>'
+      + '<div class="pf-line">📷 照片：' + photoTxt + '</div>'
+      + '<div class="pf-line">🎵 音乐：' + musicTxt + ' · ' + srcLabel + '</div>'
+      + '</div>';
+  });
+  html += '</div>';
+  html += '<div class="pf-note">红色表示该环节照片或音乐为空，请先在下方设置好再开始播放</div>';
+  el.innerHTML = html;
+  var rb = $('btnPreflightRefresh');
+  if (rb) rb.addEventListener('click', refreshPreflight);
+}
+function refreshPreflight() {
+  renderPreflight();
+  if (!SERVER_MODE) return;
+  var token = ++preflightScanToken;
+  var dirs = {};
+  MODE_KEYS.forEach(function (k) {
+    var pd = modePhotoDir(k);
+    if (pd) dirs[pd] = true;
+    if ((state.modeMusicSource[k] || 'all') !== 'playlist' && state.modeLocalDirs[k]) dirs[state.modeLocalDirs[k]] = true;
+  });
+  Object.keys(dirs).forEach(function (dir) {
+    fetch('/api/scan?dir=' + encodeURIComponent(dir)).then(function (r) { return r.json(); }).then(function (d) {
+      if (token !== preflightScanToken) return;
+      var files = (d && d.files) || [];
+      var photos = 0, audios = 0;
+      files.forEach(function (rel) {
+        var nm = rel.split('/').pop();
+        if (PHOTO_RE.test(nm) || VIDEO_RE.test(nm)) photos++;
+        else if (AUDIO_RE.test(nm)) audios++;
+      });
+      preflightScanCache[dir] = { photos: photos, audios: audios };
+      renderPreflight();
+    }).catch(function () {
+      if (token !== preflightScanToken) return;
+      preflightScanCache[dir] = { photos: 0, audios: 0 };
+      renderPreflight();
+    });
+  });
+}
+/* ================= 播放页界面锁定（防误触） ================= */
+function toggleLock() {
+  state.uiLocked = !state.uiLocked;
+  var b = $('lockBadge');
+  if (b) b.classList.toggle('hidden', !state.uiLocked);
+  $('btnLock').classList.toggle('on', state.uiLocked);
+  if (state.uiLocked) {
+    clearTimeout(state.controlsTimer);
+    $('controls').classList.remove('show');
+    $('topInfo').classList.remove('show');
+  } else {
+    showControls();
+  }
+  toast(state.uiLocked ? '界面已锁定（点击右上角解锁）' : '界面已解锁');
+}
+function restoreDir() {
+  loadDirHandle().then(function (h) {
+    if (h) {
+      h.queryPermission({ mode: 'read' }).then(function (p) {
+        if (p === 'granted') { state.dirHandle = h; scanDirHandle(h); }
+        else if (p === 'prompt') {
+          state.dirHandle = h;
+          $('dropZone').querySelector('p').textContent = '📁 上次的素材文件夹待授权，点击继续';
+        }
+      }).catch(function () { tryServerDir(); });
+    } else {
+      tryServerDir();
+    }
+  }).catch(function () { tryServerDir(); });
+}
+// 服务器模式：直接从程序目录下的 photoDir 扫描素材（无需浏览器授权）
+function tryServerDir() {
+  if (!SERVER_MODE || !state.photoDirName) return;
+  loadDirFromServer(state.photoDirName).then(function (ok) {
+    if (ok) {
+      var dzp = $('dropZone').querySelector('p');
+      if (dzp) dzp.textContent = '📁 已自动加载上次文件夹：' + state.photoDirName + '（服务器读取）';
+    }
+  });
+}
+function loadDirFromServer(dirName) {
+  return fetch('/api/scan?dir=' + encodeURIComponent(dirName)).then(function (r) { return r.json(); }).then(function (d) {
+    if (!d || !d.files || !d.files.length) return false;
+    var photos = [], videos = [], tracks = [], lrcs = [];
+    d.files.forEach(function (rel) {
+      var n = rel.split('/').pop();
+      if (PHOTO_RE.test(n)) photos.push({ name: n, url: rel, type: 'image' });
+      else if (VIDEO_RE.test(n)) videos.push({ name: n, url: rel, type: 'video' });
+      else if (AUDIO_RE.test(n)) tracks.push({ name: n, url: rel, source: 'server' });
+      else if (LRC_RE.test(n)) lrcs.push({ name: n, url: rel });
+    });
+    if (!photos.length && !videos.length && !tracks.length) return false;
+    photos.sort(naturalCmp);
+    videos.sort(naturalCmp);
+    tracks.sort(naturalCmp);
+    var mixed = photos.concat(videos);
+    mixed.sort(function (a, b) { return naturalCmp({ name: a.name }, { name: b.name }); });
+    state.photos.forEach(function (p) { if (p.url && p.url.indexOf('blob:') === 0) URL.revokeObjectURL(p.url); });
+    state.photos = mixed;
+    state.photoDirName = dirName;
+    scheduleConfigSave();
+    state.tracks.forEach(function (t) { if (isMediaGroup(t)) revokeTrackMedia(t); });
+    var kept = state.tracks.filter(function (t) { return !isMediaGroup(t); });
+    var localTracks = tracks.map(function (f) {
+      return { id: uid(), name: f.name, url: f.url, source: 'server', grp: 'media', lrc: null, lrcRaw: '', modes: { warmup: true, ceremony: true, ending: true } };
+    });
+    state.tracks = kept.concat(localTracks);
+    // 异步匹配同名 .lrc 歌词
+    var tasks = lrcs.map(function (f) {
+      return fetch(f.url).then(function (r) { return r.arrayBuffer(); }).then(function (ab) {
+        return { key: basenameNoExt(f.name).toLowerCase(), text: bytesToString(new Uint8Array(ab)) };
+      }).catch(function () { return null; });
+    });
+    Promise.all(tasks).then(function (entries) {
+      var pool = {};
+      entries.forEach(function (e) { if (e) pool[e.key] = e.text; });
+      var matched = 0;
+      state.tracks.forEach(function (t) {
+        if (t.source === 'server' && t.grp === 'media') {
+          var k = basenameNoExt(t.name).toLowerCase();
+          if (pool[k]) { t.lrc = parseLRC(pool[k]); t.lrcRaw = pool[k]; matched++; }
+        }
+      });
+      if (matched) toast('已自动匹配 ' + matched + ' 首歌词');
+      updateStats();
+      renderTrackList();
+    });
+    updateStats();
+    renderTrackList();
+    delete preflightScanCache[dirName];
+    refreshPreflight();
+    return true;
+  }).catch(function () { return false; });
+}
+
+function renderSavedPlaylists() {
+  // 「已保存歌单」列表已移除：通用歌单在顶部输入框配置，各模式定制在模式卡片中配置
+  return;
+}
+function autoReimportPlaylists() {
+  if (!SERVER_MODE || !state.playlists || !state.playlists.length) return;
+  var list = state.playlists.slice();
+  var idx = 0;
+  function next() {
+    if (idx >= list.length) {
+      setImportStatus('自动导入完成：共导入 ' + state.tracks.length + ' 首歌曲');
+      return;
+    }
+    var item = list[idx++];
+    setImportStatus('自动导入歌单 ' + idx + ' / ' + list.length + '…');
+    if (!item || typeof item !== 'object') { next(); return; }
+    var p = item.type === 'text' && typeof item.text === 'string'
+      ? (function () {
+          var text = item.text || '';
+          var lines = text.split(String.fromCharCode(10));
+          var songs = [];
+          lines.forEach(function (l) {
+            l = l.replace(String.fromCharCode(13), '').trim();
+            if (!l) return;
+            var m = l.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+            if (m) songs.push({ name: m[1].trim(), artist: m[2].trim() });
+            else if (l.length < 60) songs.push({ name: l, artist: '' });
+          });
+          if (!songs.length) return Promise.resolve();
+          return matchAndAdd(songs, '已保存文本歌单', SERVER_MODE);
+        })()
+      : importPlaylistUrl(item.url);
+    p.then(next).catch(function () { next(); });
+  }
+  setImportStatus('检测到 ' + list.length + ' 个通用歌单，开始自动导入…');
+  next();
+}
+function afterConfigLoaded() {
+  renderModeCards();
+  renderTrackList();
+  updateStats();
+  // 预填通用歌单输入框（顶部「导入歌单」= 通用配置）
+  var gpl = $('playlistUrl');
+  if (gpl && state.playlists && state.playlists.length) {
+    var first = state.playlists[0];
+    gpl.value = first && (first.url || first.text || '');
+  }
+  $('coverSelect').value = state.cover;
+  var nc = $('neteaseCookie');
+  if (nc) nc.value = state.neteaseCookie || '';
+  var qc = $('qqCookie');
+  if (qc) qc.value = state.qqCookie || '';
+  updateQqCookieStatus();
+  if (state.photoDirName) {
+    var dzp = $('dropZone').querySelector('p');
+    if (dzp) dzp.textContent = '📁 上次文件夹：' + state.photoDirName + '（点击重新选择）';
+  }
+  var b = $('modeBanner');
+  if (b) {
+    if (SERVER_MODE) { b.textContent = '✅ 本地服务模式：歌单导入与播放稳定可用'; b.className = 'mode-banner ok'; }
+    else { b.textContent = '⚠️ 免安装模式：本地照片/音乐正常，但歌单歌曲可能无法播放 —— 请用「启动播放器.bat」启动获得完整功能'; b.className = 'mode-banner warn'; }
+  }
+  var am = $('apiMode');
+  if (am) {
+    if (SERVER_MODE) { am.textContent = '歌单导入：本地服务模式（稳定）'; am.style.color = '#9ecb8a'; }
+    else { am.textContent = '歌单导入：直接打开模式（可能不稳定，建议用「启动播放器.bat」启动）'; am.style.color = '#e8b85a'; }
+  }
+  renderSavedPlaylists();
+  refreshMusicDirLabel();
+  wireEvents();
+  restoreDir();
+  startupModeAssets();
+  // 启动时按记忆文件夹重新加载本地音乐（服务器模式，异步完成后再重建队列）
+  if (SERVER_MODE) loadPersistedMusicDirs();
+  refreshPreflight();
+}
+// 切换模式时：串行导入该模式配置的歌单（标记为该模式专属）
+function autoImportModePlaylists(key, onDone) {
+  var list = modePlaylistList(key);
+  if (!list.length) { if (onDone) onDone(); return; }
+  var idx = 0;
+  function next() {
+    if (idx >= list.length) {
+      setImportStatus('「' + state.modeDefs[key].name + '」歌单导入完成：共 ' + state.tracks.length + ' 首');
+      if (onDone) onDone();
+      return;
+    }
+    var item = list[idx++];
+    if (!item || typeof item !== 'object') { next(); return; }
+    var p = item.type === 'text' && typeof item.text === 'string'
+      ? (function () {
+          var text = item.text || '';
+          var lines = text.split(String.fromCharCode(10));
+          var songs = [];
+          lines.forEach(function (l) {
+            l = l.replace(String.fromCharCode(13), '').trim();
+            if (!l) return;
+            var m = l.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+            if (m) songs.push({ name: m[1].trim(), artist: m[2].trim() });
+            else if (l.length < 60) songs.push({ name: l, artist: '' });
+          });
+          return songs.length ? matchAndAdd(songs, '文本歌单', SERVER_MODE, key) : Promise.resolve();
+        })()
+      : importPlaylistUrl(item.url, key);
+    p.then(next).catch(function () { next(); });
+  }
+  next();
+}
+// 启动：只导入当前模式（默认热场）实际使用的歌单（无定制 → 通用歌单）
+// 其他模式的定制歌单在切换模式时（loadModeAssets）再导入
+function startupModeAssets() {
+  var dir = state.modeDirs[state.currentMode] || '';
+  if (dir && dir !== state.photoDirName) {
+    loadDirFromServer(dir).then(function (ok) {
+      if (ok) { updateStats(); toast('已加载「' + state.modeDefs[state.currentMode].name + '」素材文件夹'); }
+    });
+  }
+  // 该环节专属本地音乐文件夹（服务器模式）
+  if (SERVER_MODE && state.modeLocalDirs[state.currentMode]) {
+    loadModeLocalDir(state.currentMode);
+  }
+  // 该环节音乐来源=本地：不自动导入歌单（本地音乐由「导入本地音乐」/记忆文件夹在启动时加载）
+  if ((state.modeMusicSource[state.currentMode] || 'all') === 'local') return;
+  var items = modePlaylistList(state.currentMode);
+  if (!items.length) { autoReimportPlaylists(); return; }
+  setImportStatus('自动导入当前模式歌单…');
+  var i = 0;
+  function next() {
+    if (i >= items.length) {
+      setImportStatus('自动导入完成：共 ' + state.tracks.length + ' 首歌曲');
+      // 导入完成仅重建队列，不自动播放（点击「开始播放」时才播放）
+      buildQueue();
+      return;
+    }
+    var item = items[i++];
+    setImportStatus('自动导入歌单 ' + i + ' / ' + items.length + '…');
+    if (!item || typeof item !== 'object') { next(); return; }
+    var p;
+    if (item.type === 'text' && typeof item.text === 'string') {
+      var text = item.text || '';
+      var lines = text.split(String.fromCharCode(10));
+      var songs = [];
+      lines.forEach(function (l) {
+        l = l.replace(String.fromCharCode(13), '').trim();
+        if (!l) return;
+        var m = l.match(/^(.+?)\s*[-–—]\s*(.+)$/);
+        if (m) songs.push({ name: m[1].trim(), artist: m[2].trim() });
+        else if (l.length < 60) songs.push({ name: l, artist: '' });
+      });
+      p = songs.length ? matchAndAdd(songs, '文本歌单', SERVER_MODE) : Promise.resolve();
+    } else {
+      p = importPlaylistUrl(item.url);
+    }
+    p.then(next).catch(function () { next(); });
+  }
+  next();
+}
+(function init() {
+  state.audio = new Audio();
+  state.audio.preload = 'auto';
+  loadConfig();
+  if (SERVER_MODE) {
+    // 优先读取 config.json
+    fetch('/api/config').then(function (r) { return r.json(); }).then(function (cfg) {
+      if (cfg && cfg.version) {
+        state.tracks = [];
+        restoreFromConfig(cfg);
+      }
+      afterConfigLoaded();
+    }).catch(function () { afterConfigLoaded(); });
+  } else {
+    afterConfigLoaded();
+  }
+})();
+
+})();
+</script>
+</body>
+</html>
