@@ -392,6 +392,7 @@ details.fold > .fold-body { padding: 0 16px 16px; }
       </div>
       <input type="file" id="fileInputMusicDir" webkitdirectory multiple class="hidden">
       <input type="file" id="fileInputMusicFiles" accept="audio/*,.mp3,.wav,.ogg,.flac,.m4a,.aac,.opus,.mgg,.mflac,.ncm,.qmcflac,.qmcogg" multiple class="hidden">
+      <input type="file" id="fileInputModePhotoDir" webkitdirectory multiple class="hidden">
       <div id="musicImportStatus" class="status hidden"></div>
       <p class="hint">与照片素材文件夹互不影响：本地服务模式下「📁 导入音乐文件夹」选择程序目录内的音乐文件夹（如 music/仪式），重启后自动重新加载；音乐文件名支持中文/空格（需配合新版 wedding-server.exe）。「🎵 选择音乐文件」可多选任意位置的音频（浏览器方式，当次会话有效）。QQ音乐/网易云 VIP 下载的 <b>.mgg/.mflac/.ncm</b> 是加密专属格式，无法直接播放 —— 请先用「音钥 MusicKey」等解锁工具转成 mp3/ogg/flac 后再导入。</p>
 
@@ -677,7 +678,10 @@ var state = {
   musicPlaying: false,
   uiLocked: false,
   modeCardCollapsed: { warmup: false, ceremony: false, ending: false },
-  modeAdvOpen: { warmup: false, ceremony: false, ending: false }
+  modeAdvOpen: { warmup: false, ceremony: false, ending: false },
+  // 免安装（浏览器）模式下的每环节照片集；null=该环节用第一步的通用素材
+  modePhotos: { warmup: null, ceremony: null, ending: null },
+  modePhotoLabel: { warmup: '', ceremony: '', ending: '' }
 };
 var els = { layers: [$('layer0'), $('layer1')] };
 
@@ -998,6 +1002,36 @@ function clearModeLocalDir(key) {
 function pickModeLocalDir(key) {
   if (SERVER_MODE) { openDirPicker(key, 'modelocal'); }
   else { _musicPickMode = key; $('fileInputMusicDir').click(); }
+}
+// 环节卡片上的「选择照片文件夹」
+function pickModeDir(key) {
+  if (SERVER_MODE) { openDirPicker(key); }
+  else { _photoPickMode = key; $('fileInputModePhotoDir').click(); }
+}
+// 免安装模式：把浏览器选中的文件夹作为某环节专属照片集
+function ingestModePhotoFiles(fileList, key) {
+  if (!fileList || !fileList.length) return;
+  var photos = [], videos = [];
+  for (var i = 0; i < fileList.length; i++) {
+    var f = fileList[i], n = f.name || '';
+    if (PHOTO_RE.test(n)) photos.push(f);
+    else if (VIDEO_RE.test(n)) videos.push(f);
+  }
+  photos.sort(naturalCmp); videos.sort(naturalCmp);
+  var mixed = photos.map(function (f) { return { name: f.name, url: URL.createObjectURL(f), type: 'image' }; })
+    .concat(videos.map(function (f) { return { name: f.name, url: URL.createObjectURL(f), type: 'video' }; }));
+  mixed.sort(function (a, b) { return naturalCmp({ name: a.name }, { name: b.name }); });
+  var prev = state.modePhotos[key];
+  if (prev) prev.forEach(function (p) { if (p.url && p.url.indexOf('blob:') === 0) URL.revokeObjectURL(p.url); });
+  state.modePhotos[key] = mixed.length ? mixed : null;
+  var rel = fileList[0].webkitRelativePath || '';
+  state.modePhotoLabel[key] = rel ? rel.split('/')[0] : (mixed.length ? '（浏览器导入）' : '');
+  if (state.currentMode === key) { state.photos = state.modePhotos[key] || []; state.photoIndex = 0; }
+  saveConfig();
+  renderModeCards();
+  updateStats();
+  if (mixed.length) toast('已为「' + state.modeDefs[key].name + '」环节加载 ' + mixed.length + ' 张照片/视频');
+  else toast('「' + state.modeDefs[key].name + '」所选文件夹里没有照片');
 }
 // 启动时按记忆的文件夹列表重新加载本地音乐（服务器模式）
 function loadPersistedMusicDirs() {
@@ -1328,6 +1362,7 @@ function renderModeCards() {
     var d = state.modeDefs[k];
     var collapsed = !!(state.modeCardCollapsed && state.modeCardCollapsed[k]);
     var advOpen = !!(state.modeAdvOpen && state.modeAdvOpen[k]);
+    var dirLabel = state.modeDirs[k] || (state.modePhotoLabel ? state.modePhotoLabel[k] : '') || '';
     html += '<div class="mode-card' + (collapsed ? ' collapsed' : '') + '" data-mode="' + k + '">'
       + '<button type="button" class="mode-head" data-act="togglecard" data-mode="' + k + '" aria-expanded="' + (collapsed ? 'false' : 'true') + '">'
       +   '<span class="mode-head-title">' + (d.icon ? d.icon + ' ' : '') + d.name + '环节</span>'
@@ -1335,6 +1370,18 @@ function renderModeCards() {
       +   '<span class="mode-head-caret">▾</span>'
       + '</button>'
       + '<div class="mode-body">'
+      +   '<label>本环节照片文件夹（留空则用第一步的素材）</label>'
+      +   '<div class="row" style="margin-top:2px">'
+      +   '<button type="button" class="btn mini" data-act="pickdir" data-mode="' + k + '" style="flex:none">📁 选择照片</button>'
+      +   '<span id="dirVal_' + k + '" style="flex:1;font-size:12px;color:' + (dirLabel ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (dirLabel ? esc(dirLabel) : '（未设置，用第一步素材）') + '</span>'
+      +   '<button type="button" class="btn mini danger" data-act="cleardir" data-mode="' + k + '" style="flex:none"' + (dirLabel ? '' : ' disabled') + '>✕</button>'
+      +   '</div>'
+      +   '<label>本环节音乐文件夹（留空则用第一步的本地音乐）</label>'
+      +   '<div class="row" style="margin-top:2px">'
+      +   '<button type="button" class="btn mini" data-act="picklocaldir" data-mode="' + k + '" style="flex:none">💿 选择音乐</button>'
+      +   '<span id="mlVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeLocalDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeLocalDirs[k] ? esc(state.modeLocalDirs[k]) : '（未设置：用第一步本地音乐）') + '</span>'
+      +   '<button type="button" class="btn mini danger" data-act="clearlocaldir" data-mode="' + k + '" style="flex:none"' + (state.modeLocalDirs[k] ? '' : ' disabled') + '>✕</button>'
+      +   '</div>'
       +   '<label>照片停留 <span class="val">' + d.photoDur + '</span> 秒</label>'
       +   '<input type="range" min="2" max="20" step="1" value="' + d.photoDur + '" data-f="photoDur">'
       +   '<label>切换特效（可多选，每张照片随机切换）</label>'
@@ -1355,13 +1402,7 @@ function renderModeCards() {
       +   '<label class="check"><input type="checkbox" data-f="shuffle"' + (d.shuffle ? ' checked' : '') + '> 随机播放该环节音乐</label>'
       +   '<label class="check"><input type="checkbox" data-f="photoShuffle"' + (d.photoShuffle ? ' checked' : '') + '> 照片随机轮播（一轮内不重复）</label>'
       +   '<details class="mode-adv"' + (advOpen ? ' open' : '') + '>'
-      +     '<summary>本环节高级：素材 / 歌单 / 音乐来源</summary>'
-      +     '<label>素材文件夹（可留空共用上方素材）</label>'
-      +     '<div class="row" style="margin-top:2px">'
-      +     '<button type="button" class="btn mini" data-act="pickdir" data-mode="' + k + '" style="flex:none">📁 选择文件夹</button>'
-      +     '<span id="dirVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeDirs[k] ? esc(state.modeDirs[k]) : '（未设置，用上方素材）') + '</span>'
-      +     '<button type="button" class="btn mini danger" data-act="cleardir" data-mode="' + k + '" style="flex:none"' + (state.modeDirs[k] ? '' : ' disabled') + '>✕</button>'
-      +     '</div>'
+      +     '<summary>本环节高级：歌单 / 音乐来源</summary>'
       +     '<label>歌单链接（本环节专用，只填一个，可留空）</label>'
       +     '<input type="text" data-f="playlists" value="' + esc(state.modePlaylists[k] || '') + '" placeholder="粘贴本环节的歌单链接，如 y.qq.com/... 或 music.163.com/...">'
       +     '<label>音乐来源（本环节播放哪批音乐）</label>'
@@ -1370,12 +1411,6 @@ function renderModeCards() {
       +     option('playlist', '歌单（只放歌单导入 + 在线直链，需网络）', state.modeMusicSource[k] || 'all')
       +     option('local', '本地（只放本地已下载/扫描的音乐，离线最稳）', state.modeMusicSource[k] || 'all')
       +     '</select>'
-      +     '<label>本地音乐文件夹（本环节专用：设置后该环节只播此目录的音乐）</label>'
-      +     '<div class="row" style="margin-top:2px">'
-      +     '<button type="button" class="btn mini" data-act="picklocaldir" data-mode="' + k + '" style="flex:none">💿 选择</button>'
-      +     '<span id="mlVal_' + k + '" style="flex:1;font-size:12px;color:' + (state.modeLocalDirs[k] ? '#9ecb8a' : '#9a9aa6') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (state.modeLocalDirs[k] ? esc(state.modeLocalDirs[k]) : '（未设置：用上方「导入本地音乐」或素材文件夹里的音乐）') + '</span>'
-      +     '<button type="button" class="btn mini danger" data-act="clearlocaldir" data-mode="' + k + '" style="flex:none"' + (state.modeLocalDirs[k] ? '' : ' disabled') + '>✕</button>'
-      +     '</div>'
       +   '</details>'
       + '</div>'
       + '</div>';
@@ -1438,6 +1473,7 @@ function modeCardsInput(e) {
 var _dirPickerMode = null;   // 当前正在为哪个模式选目录
 var _dirPickerTarget = 'material'; // material=素材目录 / music=本地音乐目录 / modelocal=环节专属音乐目录
 var _musicPickMode = null;   // 浏览器模式：正在为哪个环节选本地音乐文件夹
+var _photoPickMode = null;   // 浏览器模式：正在为哪个环节选照片文件夹
 var _dirPickerPath = '';     // 当前浏览到的相对路径
 function openDirPicker(modeKey, target) {
   _dirPickerMode = modeKey;
@@ -1529,10 +1565,16 @@ function dirListClick(e) {
 }
 function clearModeDir(modeKey) {
   state.modeDirs[modeKey] = '';
+  if (state.modePhotos[modeKey]) {
+    state.modePhotos[modeKey].forEach(function (p) { if (p.url && p.url.indexOf('blob:') === 0) URL.revokeObjectURL(p.url); });
+    state.modePhotos[modeKey] = null;
+  }
+  if (state.modePhotoLabel) state.modePhotoLabel[modeKey] = '';
+  if (!SERVER_MODE && state.currentMode === modeKey) state.photos = [];
   saveConfig();
   renderModeCards();
   refreshPreflight();
-  toast('已清空「' + state.modeDefs[modeKey].name + '」素材文件夹，使用上方素材');
+  toast('已清空「' + state.modeDefs[modeKey].name + '」素材，使用第一步素材');
 }
 
 /* ================= 配置持久化 ================= */
@@ -2743,6 +2785,16 @@ function setMode(key) {
 // 切换模式时加载该模式专属的素材文件夹与歌单
 // 返回 true 表示有异步加载进行中（完成后会统一重建队列并播放）
 function loadModeAssets(key) {
+  // 免安装（浏览器）模式：该环节若有专属照片集，切换过去
+  if (!SERVER_MODE && state.modePhotos && state.modePhotos[key]) {
+    state.photos = state.modePhotos[key];
+    state.photoIndex = 0;
+    state.photoPaused = false;
+    $('btnPhotoPause').textContent = 'Ⅱ';
+    playPhoto(0);
+    updateCounter();
+    updateStats();
+  }
   var pending = [];
   // 该模式的素材目录：有定制用定制；没有则用通用目录
   var dir = state.modeDirs[key] || state.genericDir || 'input';
@@ -2854,6 +2906,12 @@ function wireEvents() {
   });
   $('btnPickMusicDir').addEventListener('click', pickMusicDir);
   $('btnPickMusicFiles').addEventListener('click', function () { $('fileInputMusicFiles').click(); });
+  $('fileInputModePhotoDir').addEventListener('change', function () {
+    var mk = _photoPickMode;
+    _photoPickMode = null;
+    if (mk && this.files && this.files.length) ingestModePhotoFiles(this.files, mk);
+    this.value = '';
+  });
   $('fileInputMusicDir').addEventListener('change', function () {
     if (this.files && this.files.length) {
       var mk = _musicPickMode;
@@ -2901,7 +2959,7 @@ function wireEvents() {
     if (!btn) return;
     var act = btn.getAttribute('data-act');
     var mode = btn.getAttribute('data-mode');
-    if (act === 'pickdir') { openDirPicker(mode); }
+    if (act === 'pickdir') { pickModeDir(mode); }
     else if (act === 'cleardir') { clearModeDir(mode); }
     else if (act === 'picklocaldir') { pickModeLocalDir(mode); }
     else if (act === 'clearlocaldir') { clearModeLocalDir(mode); }
@@ -3073,7 +3131,9 @@ function renderPreflight() {
         else { photoTxt = '检查中…'; photoKnown = false; }
       }
     } else {
-      if (k === state.currentMode) { photoTxt = state.photos.length + ' 张'; photoOk = state.photos.length > 0; }
+      if (state.modePhotos && state.modePhotos[k]) {
+        var mp = state.modePhotos[k].length; photoTxt = mp + ' 张'; photoOk = mp > 0;
+      } else if (k === state.currentMode) { photoTxt = state.photos.length + ' 张'; photoOk = state.photos.length > 0; }
       else { photoTxt = '进入环节时加载'; photoKnown = false; }
     }
     var srcLabel = { all: '全部', playlist: '歌单/在线', local: '本地' }[mi.pref];
