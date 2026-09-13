@@ -348,6 +348,156 @@ details.fold > .fold-body { padding: 0 16px 16px; }
 .mode-adv > summary::-webkit-details-marker { display: none; }
 .mode-adv > summary::before { content: '▸ '; color: #e8c86a; }
 .mode-adv[open] > summary::before { content: '▾ '; }
+
+/* ================= 视觉增强（烁烁 2026-09-13） ================= */
+:root {
+  --gold: #e8c86a; --gold-soft: #f5dd9d; --gold-strong: #c9a227;
+  --gold-glow: rgba(232,200,106,.35);
+  --rose: #f0b6c0; --amber: #f2b27a;
+}
+
+/* --- 设置页氛围：散景极光 --- */
+#screenSetup::before {
+  content: ''; position: fixed; inset: -20%; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 18% 12%, rgba(232,200,106,.16), transparent 70%),
+    radial-gradient(34% 38% at 82% 8%, rgba(240,182,192,.13), transparent 72%),
+    radial-gradient(42% 46% at 70% 92%, rgba(201,162,39,.12), transparent 70%),
+    radial-gradient(30% 34% at 30% 80%, rgba(158,203,138,.06), transparent 72%);
+  filter: blur(8px);
+  animation: aurora 26s ease-in-out infinite alternate;
+}
+@keyframes aurora {
+  0% { transform: translate3d(0,0,0) scale(1); }
+  50% { transform: translate3d(-2%,1.5%,0) scale(1.06); }
+  100% { transform: translate3d(2%,-1%,0) scale(1.02); }
+}
+#screenSetup > * { position: relative; z-index: 1; }
+#screenSetup > .step-bar { position: sticky; top: 0; z-index: 20; }
+
+/* --- 标题：渐变金 + 微光扫过 --- */
+.setup-head h1 {
+  background: linear-gradient(100deg,#f5dd9d 0%,#e8c86a 35%,#fff6d8 50%,#e8c86a 65%,#c9a227 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: titleSheen 7s ease-in-out infinite;
+}
+@keyframes titleSheen { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* --- 卡片：顶部高光 + 悬浮上浮 --- */
+.card {
+  position: relative; overflow: hidden;
+  background: linear-gradient(180deg,#17171f 0%,#14141b 40%);
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg,transparent,rgba(232,200,106,.5),transparent); opacity: .6;
+}
+.card:hover { border-color: #3a3418; box-shadow: 0 14px 40px rgba(0,0,0,.45); transform: translateY(-2px); }
+
+/* --- 主按钮：光泽扫过 --- */
+.primary { position: relative; overflow: hidden; }
+.primary::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: -60%; width: 45%;
+  background: linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  transform: skewX(-18deg); animation: btnSheen 3.6s ease-in-out infinite;
+}
+@keyframes btnSheen { 0%,55% { left: -60%; } 85%,100% { left: 130%; } }
+
+/* --- 步骤条发光 --- */
+.step-item.active .step-dot { box-shadow: 0 0 16px var(--gold-glow); }
+.step-line { position: relative; overflow: hidden; }
+.step-line.done::after { content: ''; position: absolute; inset: 0; background: var(--gold); animation: lineGrow .4s ease; }
+@keyframes lineGrow { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); } }
+
+/* --- 环节卡：分环节强调色 + 悬浮 --- */
+.mode-card { transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
+.mode-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+.mode-card[data-mode="warmup"]   { border-top: 2px solid var(--gold); }
+.mode-card[data-mode="ceremony"] { border-top: 2px solid var(--rose); }
+.mode-card[data-mode="ending"]   { border-top: 2px solid var(--amber); }
+.mode-card[data-mode="warmup"]   .mode-head-title { color: var(--gold); }
+.mode-card[data-mode="ceremony"] .mode-head-title { color: var(--rose); }
+.mode-card[data-mode="ending"]   .mode-head-title { color: var(--amber); }
+
+/* --- 拖拽区悬浮光 --- */
+.dropzone:hover { box-shadow: 0 0 0 4px rgba(232,200,106,.08), 0 0 26px rgba(232,200,106,.18); }
+
+/* --- 播放页：模糊背景填充（消除黑边） --- */
+.layer img, .layer video { position: relative; z-index: 1; background: transparent; }
+.layer .bd { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+.layer .bd::before {
+  content: ''; position: absolute; inset: -12%;
+  background-image: var(--bg, none); background-size: cover; background-position: center;
+  filter: blur(46px) saturate(1.35) brightness(.42); transform: scale(1.05);
+}
+.layer.is-video .bd { display: none; }
+
+/* --- 播放页：暖色漏光 + 更深的电影暗角 --- */
+#lightLeak {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: screen;
+  background:
+    radial-gradient(30% 40% at 12% 0%, rgba(232,200,106,.18), transparent 70%),
+    radial-gradient(26% 36% at 92% 6%, rgba(240,182,192,.14), transparent 72%);
+  animation: leakPulse 9s ease-in-out infinite alternate;
+}
+@keyframes leakPulse { from { opacity: .32; } to { opacity: .6; } }
+.vignette { background: radial-gradient(ellipse at center, transparent 48%, rgba(0,0,0,.62) 100%); }
+
+/* --- 叠加文字入场 --- */
+#modeOverlay.show { animation: overlayIn 1.6s cubic-bezier(.22,1,.36,1); }
+@keyframes overlayIn {
+  0% { opacity: 0; letter-spacing: 26px; transform: translateY(14px); filter: blur(8px); }
+  100% { opacity: 1; letter-spacing: 6px; transform: none; filter: blur(0); }
+}
+
+/* --- 顶部信息：玻璃拟态 --- */
+#modeTag, #photoCounter {
+  background: rgba(10,10,16,.42); backdrop-filter: blur(8px);
+  border: 1px solid rgba(232,200,106,.35); color: var(--gold-soft);
+}
+#photoCounter { color: #eaeaf2; border-color: rgba(255,255,255,.18); }
+
+/* --- 控制条：玻璃 + 发光 --- */
+#controls { background: linear-gradient(transparent, rgba(0,0,0,.9)); }
+.controls-row button {
+  background: rgba(20,20,28,.5); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.16);
+}
+.controls-row button:hover {
+  background: rgba(232,200,106,.22); border-color: var(--gold);
+  box-shadow: 0 0 16px var(--gold-glow); transform: translateY(-1px);
+}
+.controls-row button:active { transform: translateY(0) scale(.96); }
+
+/* --- 进度条发光 --- */
+#musicProgress { background: rgba(255,255,255,.14); transition: height .2s ease; }
+#musicBar { background: linear-gradient(90deg,#c9a227,#e8c86a,#f7ead0); box-shadow: 0 0 12px var(--gold-glow); }
+#musicProgress:hover { height: 7px; }
+
+/* --- 正在播放：玻璃胶囊 --- */
+#trackName {
+  background: rgba(20,20,28,.5); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.12); border-radius: 20px;
+  padding: 5px 14px; color: #f0f0f5;
+}
+
+/* --- 歌词：光晕 + 底部渐隐 + 金线 --- */
+#lyricsPanel {
+  -webkit-mask-image: linear-gradient(transparent,#000 18%,#000 82%,transparent);
+  mask-image: linear-gradient(transparent,#000 18%,#000 82%,transparent);
+}
+.lrc-line.active { text-shadow: 0 0 26px rgba(232,200,106,.55), 0 2px 10px rgba(0,0,0,.9); }
+.lrc-line.active::after {
+  content: ''; display: block; width: 56px; height: 2px; margin: 10px auto 0; border-radius: 2px;
+  background: linear-gradient(90deg,transparent,var(--gold),transparent); opacity: .85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #screenSetup::before, .setup-head h1, .primary::after, #lightLeak { animation: none !important; }
+}
 </style>
 </head>
 <body>
@@ -497,9 +647,10 @@ details.fold > .fold-body { padding: 0 16px 16px; }
 <!-- ================= 播放页 ================= -->
 <div id="screenPlayer" class="screen hidden">
   <div id="stage">
-    <div class="layer" id="layer0"><img alt=""><video playsinline muted></video></div>
-    <div class="layer" id="layer1"><img alt=""><video playsinline muted></video></div>
+    <div class="layer" id="layer0"><div class="bd"></div><img alt=""><video playsinline muted></video></div>
+    <div class="layer" id="layer1"><div class="bd"></div><img alt=""><video playsinline muted></video></div>
     <div class="vignette"></div>
+    <div id="lightLeak"></div>
     <div id="particles"></div>
     <div id="modeOverlay"></div>
   </div>
@@ -2607,6 +2758,8 @@ function showLayer() {
   newLayer.className = 'layer transition-' + trans;
   newLayer.classList.toggle('is-video', isVideo);
   newLayer.classList.toggle('is-photo', !isVideo);
+  if (!isVideo && cur && cur.url) newLayer.style.setProperty('--bg', 'url(' + JSON.stringify(cur.url) + ')');
+  else newLayer.style.removeProperty('--bg');
   var img = newLayer.querySelector('img');
   var vid = newLayer.querySelector('video');
   img.style.objectFit = state.cover;
