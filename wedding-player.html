@@ -1265,29 +1265,6 @@ function pickNew() {
     $('fileInputFolder').click();
   }
 }
-function pickFolder() {
-  try {
-    var h = state.dirHandle;
-    if (window.showDirectoryPicker && h) {
-      var timer = setTimeout(function () { pickNew(); }, 2500);
-      h.queryPermission({ mode: 'read' }).then(function (p) {
-        clearTimeout(timer);
-        if (p === 'granted') { doScan(h); }
-        else {
-          h.requestPermission({ mode: 'read' }).then(function (p2) {
-            if (p2 === 'granted') doScan(h);
-            else { toast('未获得文件夹权限，请点下方「兼容模式」按钮选择'); flashFallback(); }
-          }).catch(function () { pickNew(); });
-        }
-      }).catch(function () { clearTimeout(timer); pickNew(); });
-    } else {
-      pickNew();
-    }
-  } catch (e) {
-    toast('选择出错：' + e.message + '，请点下方「兼容模式」按钮');
-    flashFallback();
-  }
-}
 function flashFallback() {
   var el = $('fallbackPick');
   if (!el) return;
@@ -3498,10 +3475,6 @@ function loadDirFromServer(dirName) {
   }).catch(function () { return false; });
 }
 
-function renderSavedPlaylists() {
-  // 「已保存歌单」列表已移除：通用歌单在顶部输入框配置，各模式定制在模式卡片中配置
-  return;
-}
 function autoReimportPlaylists() {
   if (!SERVER_MODE || !state.playlists || !state.playlists.length) return;
   var list = state.playlists.slice();
@@ -3565,7 +3538,6 @@ function afterConfigLoaded() {
     if (SERVER_MODE) { am.textContent = '歌单导入：本地服务模式（稳定）'; am.style.color = '#9ecb8a'; }
     else { am.textContent = '歌单导入：直接打开模式（可能不稳定，建议用「启动播放器.bat」启动）'; am.style.color = '#e8b85a'; }
   }
-  renderSavedPlaylists();
   refreshMusicDirLabel();
   wireEvents();
   restoreDir();
