@@ -127,7 +127,7 @@ input:focus, select:focus, textarea:focus { border-color: #e8c86a; }
 #stage { position: absolute; inset: 0; overflow: hidden; }
 .layer { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; z-index: 1; will-change: opacity; }
 .layer.show { opacity: 1; }
-.layer img, .layer video { width: 100%; height: 100%; object-fit: contain; will-change: transform, opacity, filter; background: #000; }
+.layer img, .layer video { width: 100%; height: 100%; object-fit: contain; will-change: transform, opacity; background: #000; }
 .layer.is-video img { display: none; }
 .layer.is-photo video { display: none; }
 .transition-kenburns img { animation: kenburns var(--kdur, 8s) linear forwards; }
@@ -429,28 +429,30 @@ details.fold > .fold-body { padding: 0 16px 16px; }
 .layer img, .layer video { position: relative; z-index: 1; background: transparent; }
 .layer .bd { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
 .layer .bd::before {
-  content: ''; position: absolute; inset: -12%;
-  background-image: var(--bg, none); background-size: cover; background-position: center;
-  filter: blur(46px) saturate(1.35) brightness(.42); transform: scale(1.05);
+  /* 低分辨率小图 + 放大：blur 只在小图上算（约 1/11 像素量），避免全屏模糊拖累 kenburns 缩放；
+     居中放大到 120% 以留出过扫描，避免模糊在画面边缘采样到透明而发黑 */
+  content: ''; position: absolute; left: 50%; top: 50%; width: 30%; height: 30%;
+  background-image: var(--bg, none); background-size: 100% 100%; background-position: center;
+  filter: blur(12px) saturate(1.35) brightness(.5);
+  transform: translate(-50%, -50%) scale(4);
 }
 .layer.is-video .bd { display: none; }
 
 /* --- 播放页：暖色漏光 + 更深的电影暗角 --- */
+/* 注意：不用 mix-blend-mode / 不做逐帧动画，否则会强制整屏重新混合，导致缩放动画掉帧 */
 #lightLeak {
-  position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: screen;
+  position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: .5;
   background:
-    radial-gradient(30% 40% at 12% 0%, rgba(232,200,106,.18), transparent 70%),
-    radial-gradient(26% 36% at 92% 6%, rgba(240,182,192,.14), transparent 72%);
-  animation: leakPulse 9s ease-in-out infinite alternate;
+    radial-gradient(30% 40% at 12% 0%, rgba(232,200,106,.22), transparent 70%),
+    radial-gradient(26% 36% at 92% 6%, rgba(240,182,192,.16), transparent 72%);
 }
-@keyframes leakPulse { from { opacity: .32; } to { opacity: .6; } }
 .vignette { background: radial-gradient(ellipse at center, transparent 48%, rgba(0,0,0,.62) 100%); }
 
-/* --- 叠加文字入场 --- */
+/* --- 叠加文字入场（只用 transform/opacity，避免 filter/letter-spacing 逐帧重排） --- */
 #modeOverlay.show { animation: overlayIn 1.6s cubic-bezier(.22,1,.36,1); }
 @keyframes overlayIn {
-  0% { opacity: 0; letter-spacing: 26px; transform: translateY(14px); filter: blur(8px); }
-  100% { opacity: 1; letter-spacing: 6px; transform: none; filter: blur(0); }
+  0% { opacity: 0; transform: translateY(14px) scale(1.06); }
+  100% { opacity: 1; transform: none; }
 }
 
 /* --- 顶部信息：玻璃拟态 --- */
