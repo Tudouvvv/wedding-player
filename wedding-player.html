@@ -686,6 +686,7 @@ var state = {
 var els = { layers: [$('layer0'), $('layer1')] };
 
 /* ================= LRC 解析 ================= */
+function isCJK(s) { return /[\u3400-\u9FFF\uF900-\uFAFF]/.test(s); }
 function parseLRC(text, transText) {
   var build = function (src) {
     var arr = [];
@@ -707,7 +708,7 @@ function parseLRC(text, transText) {
     arr.sort(function (a, b) { return a.t - b.t; });
     return arr;
   };
-  var META_RE = /^(作词|作曲|编曲|制作人|制作|混音|录音|监制|和声|演唱|原唱|翻唱|出品|母带|Lyrics|Composed|Arranged|Produced|Mixed|Mastered|Written|Producer|Music|Guitar|Piano|Bass|Drum|Strings)\s*(?:by|：|:)/i;
+  var META_RE = /^(作词|作曲|词|曲|编曲|制作人|制作|混音|录音|监制|和声|演唱|原唱|翻唱|出品|母带|Lyrics|Composed|Arranged|Produced|Mixed|Mastered|Written|Producer|Music|Guitar|Piano|Bass|Drum|Strings)\s*(?:by|：|:)/i;
   var TRANSPLACE_RE = /^(以下歌词翻译由|本翻译由|QQ音乐享有本翻译作品的著作权|TME享有本翻译作品的著作权|翻译.*提供|\/+$)/;
   var isMeta = function (s) { return !s || META_RE.test(s) || TRANSPLACE_RE.test(s); };
   var main = build(text);
@@ -730,19 +731,29 @@ function parseLRC(text, transText) {
   var MERGE_RE = /\s+->\s+|\s*→\s*|\s+=>\s+/;
   var EPS = 0.05; // 秒：相邻且时间相近的原文/译文行归为同一句（容忍导出工具毫秒级时间偏差）
   var order = [];
+  // 统一排版：中文行始终作为主行（上面），另一种语言作为译文（下面）
+  var put = function (g, orig, tr) {
+    var gCJK = isCJK(g.text), nCJK = isCJK(orig);
+    if (!gCJK && nCJK) {
+      var oldText = g.text, oldTrans = g.trans;
+      g.text = orig;
+      g.trans = oldText;
+      if (oldTrans && g.trans.indexOf(oldTrans) < 0) g.trans += ' / ' + oldTrans;
+      if (tr && g.trans.indexOf(tr) < 0) g.trans += ' / ' + tr;
+    } else {
+      var extra = tr || orig;
+      if (!g.trans) g.trans = extra;
+      else if (extra && g.trans.indexOf(extra) < 0) g.trans += ' / ' + extra;
+    }
+  };
   main.forEach(function (ln) {
     if (isMeta(ln.text)) return; // 跳过作词/作曲/版权等制作信息行
     var parts = String(ln.text).split(MERGE_RE).map(function (s) { return s.trim(); }).filter(Boolean);
     var orig = parts.length ? parts[0] : '';
     var tr = parts.length > 1 ? parts.slice(1).join(' / ') : '';
     var g = order.length ? order[order.length - 1] : null;
-    if (g && Math.abs(ln.t - g.t) <= EPS) {
-      var extra = tr || orig;
-      if (!g.trans) g.trans = extra;
-      else if (extra && g.trans.indexOf(extra) < 0) g.trans += ' / ' + extra;
-    } else {
-      order.push({ t: ln.t, text: orig, trans: tr });
-    }
+    if (g && Math.abs(ln.t - g.t) <= EPS) put(g, orig, tr);
+    else order.push({ t: ln.t, text: orig, trans: tr });
   });
   return order;
 }
