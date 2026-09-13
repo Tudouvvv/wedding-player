@@ -3109,6 +3109,7 @@ function modeMusicCount(k) {
   } else local = localLoaded;
   return { total: local + online, online: online, pref: pref };
 }
+function fmtMedia(p, v) { return '照片 ' + p + ' 张' + (v ? ' · 视频 ' + v + ' 个' : ''); }
 function renderPreflight() {
   var el = $('preflight');
   if (!el) return;
@@ -3123,25 +3124,29 @@ function renderPreflight() {
     var mi = modeMusicCount(k);
     var dir = modePhotoDir(k);
     var photoTxt, photoKnown = true, photoOk = true;
+    var pN = 0, vN = 0;
     if (SERVER_MODE) {
       if (!dir) { photoTxt = '未设置素材目录'; photoOk = false; }
       else {
         var c = preflightCounts(dir);
-        if (c) { photoTxt = c.photos + ' 张'; photoOk = c.photos > 0; }
+        if (c) { pN = c.photos || 0; vN = c.videos || 0; photoOk = (pN + vN) > 0; photoTxt = fmtMedia(pN, vN); }
         else { photoTxt = '检查中…'; photoKnown = false; }
       }
     } else {
-      if (state.modePhotos && state.modePhotos[k]) {
-        var mp = state.modePhotos[k].length; photoTxt = mp + ' 张'; photoOk = mp > 0;
-      } else if (k === state.currentMode) { photoTxt = state.photos.length + ' 张'; photoOk = state.photos.length > 0; }
-      else { photoTxt = '进入环节时加载'; photoKnown = false; }
+      var arr = (state.modePhotos && state.modePhotos[k]) ? state.modePhotos[k]
+              : (k === state.currentMode ? state.photos : null);
+      if (arr) {
+        arr.forEach(function (x) { if (x.type === 'video') vN++; else pN++; });
+        photoOk = arr.length > 0;
+        photoTxt = fmtMedia(pN, vN);
+      } else { photoTxt = '进入环节时加载'; photoKnown = false; }
     }
     var srcLabel = { all: '全部', playlist: '歌单/在线', local: '本地' }[mi.pref];
     var musicTxt = mi.total + ' 首' + (mi.online ? '（含在线 ' + mi.online + ' 首）' : '');
     var bad = (photoKnown && !photoOk) || mi.total === 0;
     html += '<div class="pf-item' + (bad ? ' pf-bad' : '') + '">'
       + '<div class="pf-name">' + (d.icon ? d.icon + ' ' : '') + d.name + '环节</div>'
-      + '<div class="pf-line">📷 照片：' + photoTxt + '</div>'
+      + '<div class="pf-line">📷 ' + photoTxt + '</div>'
       + '<div class="pf-line">🎵 音乐：' + musicTxt + ' · ' + srcLabel + '</div>'
       + '</div>';
   });
@@ -3165,17 +3170,18 @@ function refreshPreflight() {
     fetch('/api/scan?dir=' + encodeURIComponent(dir)).then(function (r) { return r.json(); }).then(function (d) {
       if (token !== preflightScanToken) return;
       var files = (d && d.files) || [];
-      var photos = 0, audios = 0;
+      var photos = 0, videos = 0, audios = 0;
       files.forEach(function (rel) {
         var nm = rel.split('/').pop();
-        if (PHOTO_RE.test(nm) || VIDEO_RE.test(nm)) photos++;
+        if (PHOTO_RE.test(nm)) photos++;
+        else if (VIDEO_RE.test(nm)) videos++;
         else if (AUDIO_RE.test(nm)) audios++;
       });
-      preflightScanCache[dir] = { photos: photos, audios: audios };
+      preflightScanCache[dir] = { photos: photos, videos: videos, audios: audios };
       renderPreflight();
     }).catch(function () {
       if (token !== preflightScanToken) return;
-      preflightScanCache[dir] = { photos: 0, audios: 0 };
+      preflightScanCache[dir] = { photos: 0, videos: 0, audios: 0 };
       renderPreflight();
     });
   });
