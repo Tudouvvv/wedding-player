@@ -960,7 +960,10 @@ function loadMusicDirFromServer(dirName, grp, defModes, remember, label) {
         return { key: basenameNoExt(rel.split('/').pop()).toLowerCase(), text: bytesToString(new Uint8Array(ab)) };
       }).catch(function () { return null; });
     });
-    Promise.all(tasks).then(function (entries) {
+    setMusicImportStatus('已导入「' + label + '」本地音乐 ' + list.length + ' 首' + (dupN ? '（跳过重复 ' + dupN + ' 首）' : '') + (enc ? '（跳过加密 ' + enc + ' 个）' : ''));
+    // 必须等歌词匹配完成再返回：否则调用方会在 lrc 回填前就建队列并加载曲目（lrc=null），
+    // 切环节后就出现「有歌词文件却不显示」。
+    return Promise.all(tasks).then(function (entries) {
       var pool = {};
       entries.forEach(function (e) { if (e) pool[e.key] = e.text; });
       var matched = 0;
@@ -971,10 +974,12 @@ function loadMusicDirFromServer(dirName, grp, defModes, remember, label) {
         }
       });
       if (matched) toast('已为 ' + matched + ' 首本地音乐匹配歌词');
+      // 当前播放曲目若刚匹配到歌词，立即刷新歌词面板
+      var cur = state.queue[state.trackIndex];
+      if (cur && cur.grp === grp) { state.lrc = cur.lrc || null; state.activeLrc = -1; renderLyrics(); }
       renderTrackList(); updateStats();
+      return true;
     });
-    setMusicImportStatus('已导入「' + label + '」本地音乐 ' + list.length + ' 首' + (dupN ? '（跳过重复 ' + dupN + ' 首）' : '') + (enc ? '（跳过加密 ' + enc + ' 个）' : ''));
-    return true;
   }).catch(function () {
     setMusicImportStatus('读取音乐文件夹失败：' + label, true);
     return false;
@@ -3272,6 +3277,9 @@ function loadDirFromServer(dirName) {
         }
       });
       if (matched) toast('已自动匹配 ' + matched + ' 首歌词');
+      // 当前播放曲目若刚匹配到歌词，立即刷新歌词面板
+      var cur = state.queue[state.trackIndex];
+      if (cur && cur.source === 'server' && cur.grp === 'media') { state.lrc = cur.lrc || null; state.activeLrc = -1; renderLyrics(); }
       updateStats();
       renderTrackList();
     });
