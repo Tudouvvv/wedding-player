@@ -728,24 +728,23 @@ function parseLRC(text, transText) {
   // 本地单文件双语（如 163MusicLyrics 输出）：
   //   合并格式「原文 -> 译文」先按分隔符拆开；交错/独立格式再按相同时间戳配对，首行=原文，其余=译文
   var MERGE_RE = /\s+->\s+|\s*→\s*|\s+=>\s+/;
-  var byT = {}, order = [];
+  var EPS = 0.05; // 秒：相邻且时间相近的原文/译文行归为同一句（容忍导出工具毫秒级时间偏差）
+  var order = [];
   main.forEach(function (ln) {
     if (isMeta(ln.text)) return; // 跳过作词/作曲/版权等制作信息行
     var parts = String(ln.text).split(MERGE_RE).map(function (s) { return s.trim(); }).filter(Boolean);
     var orig = parts.length ? parts[0] : '';
     var tr = parts.length > 1 ? parts.slice(1).join(' / ') : '';
-    var key = String(ln.t);
-    if (!byT[key]) {
-      byT[key] = { t: ln.t, text: orig, trans: tr };
-      order.push(byT[key]);
-    } else {
-      var g = byT[key];
+    var g = order.length ? order[order.length - 1] : null;
+    if (g && Math.abs(ln.t - g.t) <= EPS) {
       var extra = tr || orig;
       if (!g.trans) g.trans = extra;
       else if (extra && g.trans.indexOf(extra) < 0) g.trans += ' / ' + extra;
+    } else {
+      order.push({ t: ln.t, text: orig, trans: tr });
     }
   });
-  return order.filter(function (l) { return !isMeta(l.text); });
+  return order;
 }
 // 本地译文侧车文件后缀（163MusicLyrics「独立」分文件保存等场景）
 var TRANS_SUFFIXES = ['.trans', '.tran', '.translation', '.tlyric', '.译文', '.翻譯', '.翻译', '.zh', '.cn', '.tr', '.romaji', '.音译'];
