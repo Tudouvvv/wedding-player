@@ -34,6 +34,8 @@ UA_ANDROID = ('Mozilla/5.0 (Linux; Android 11; M2007J3SC Build/RKQ1.200826.002; 
 
 
 def eapi_encrypt(url_path, text):
+    if not HAVE_AES:
+        raise RuntimeError('缺少 pycryptodome，歌单导入 / 扫码登录不可用（本地播放不受影响）')
     msg = 'nobody' + url_path + 'use' + text + 'md5forencrypt'
     digest = hashlib.md5(msg.encode('utf-8')).hexdigest()
     data = (url_path + '-36cd479b6b5-' + text + '-36cd479b6b5-' + digest).encode('utf-8')
@@ -354,11 +356,11 @@ class Server(socketserver.ThreadingTCPServer):
 
 def main():
     if not HAVE_AES:
-        print('缺少加密库 pycryptodome。')
-        print('请先运行: pip install pycryptodome')
-        print('或直接使用同目录的 wedding-server.exe（推荐，无需任何依赖）。')
-        input('按回车键退出...')
-        return
+        print('提示：未安装 pycryptodome —— 歌单导入 / 扫码登录不可用；')
+        print('      本地照片、本地音乐、歌词播放不受影响。')
+        print('      需要歌单功能时：pip3 install pycryptodome（需联网，建议提前装好）。')
+        print('      Windows 用户可直接用 wedding-server.exe，无需任何依赖。')
+        print('')
     srv = None
     port = PORT_START
     for p in range(port, port + 10):

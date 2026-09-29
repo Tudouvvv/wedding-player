@@ -1,4 +1,5 @@
 * text=auto
 *.bat text eol=crlf
+*.command text eol=lf
 *.png binary
 *.jpg binary
