@@ -2057,14 +2057,47 @@ function importNeteasePlaylist(id, modeKey) {
     finishImport(added, failed, '网易云歌单「' + (pl.name || '') + '」' + (modeKey ? '（' + state.modeDefs[modeKey].name + '）' : ''), dupes);
   }).catch(function (e) { setImportStatus('导入失败：' + e.message, true); });
 }
+// QQ 歌单：新版 musicu 网关（免登录）。返回 { title, songs }
+function qqPlaylistApiUrl(id) {
+  var payload = {
+    comm: { ct: 24, cv: 0 },
+    req_1: {
+      module: 'music.srfDissInfo.aiDissInfo',
+      method: 'uniform_get_Dissinfo',
+      param: { disstid: Number(id), enc_host_uin: '', tag: 1, userinfo: 1, song_begin: 0, song_num: 200 }
+    }
+  };
+  return 'https://u.y.qq.com/cgi-bin/musicu.fcg?format=json&data=' + encodeURIComponent(JSON.stringify(payload));
+}
+function fetchQQPlaylistSongs(id) {
+  var target = qqPlaylistApiUrl(id);
+  // 服务端模式复用通用 GET 代理（/api/huawei/playlist 就是 FetchGet 任意 URL），无需改 exe
+  var req = SERVER_MODE
+    ? fetch('/api/huawei/playlist?url=' + encodeURIComponent(target)).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+    : tryFetchChain([target].concat(PROXIES.map(function (p) { return p(target); })));
+  return req.then(function (data) {
+    var d = data && data.req_1 && data.req_1.data;
+    var sl = d && d.songlist;
+    if (!sl || !sl.length) throw new Error('歌单为空或不可访问（可能已删除/私密）');
+    var songs = sl.map(function (s) {
+      return {
+        name: String(s.name || s.title || '').trim(),
+        artist: (s.singer || []).map(function (x) { return x.name; }).join('/'),
+        qqmid: s.mid || '',
+        qqMediaMid: (s.file && s.file.media_mid) || ''
+      };
+    }).filter(function (s) { return s.name; });
+    return { title: (d.dirinfo && d.dirinfo.title) || '', songs: songs };
+  });
+}
 function importQQPlaylist(id, modeKey) {
   setImportStatus('正在获取 QQ 音乐歌单…');
-  return apiGetJSON('qq/playlist', { id: id }).then(function (data) {
-    var cd = data && data.cdlist && data.cdlist[0];
-    if (!cd || !cd.songlist || !cd.songlist.length) throw new Error('歌单为空或需要登录');
-    var songs = cd.songlist.map(function (s) {
-      return { name: (s.songname || '').trim(), artist: (s.singer || []).map(function (x) { return x.name; }).join('/'), qqmid: s.songmid || '', qqMediaMid: s.strMediaMid || '' };
-    }).filter(function (s) { return s.name; });
+  return fetchQQPlaylistSongs(id).then(function (info) {
+    var songs = info.songs;
+    if (!songs.length) throw new Error('歌单为空或需要登录');
     // QQ 歌单直接用 QQ 源播放（qqmid）。覆盖导入：先删掉该模式旧的歌单歌曲
     var added = 0, dupes = [];
     var modeFlags = { warmup: false, ceremony: false, ending: false };
@@ -2108,7 +2141,7 @@ function importQQPlaylist(id, modeKey) {
       });
       added++;
     });
-    finishImport(added, [], 'QQ音乐歌单「' + (cd.dissname || '') + '」' + (modeKey ? '（' + state.modeDefs[modeKey].name + '）' : ''), dupes);
+    finishImport(added, [], 'QQ音乐歌单「' + (info.title || '') + '」' + (modeKey ? '（' + state.modeDefs[modeKey].name + '）' : ''), dupes);
   }).catch(function (e) { setImportStatus('导入失败：' + e.message, true); });
 }
 function importPlaylistText() {
