@@ -160,6 +160,7 @@
 - **杀毒 / SmartScreen 拦截**：`wedding-server.exe` 未签名，在陌生电脑首次运行可能弹「Windows 已保护你的电脑」，需点「更多信息 → 仍要运行」；部分杀软会直接隔离。**请提前在一台干净电脑上试跑一次**，或把该 exe 加入杀软白名单。
 - **浏览器**：用 Edge 或 Chrome（Win10/11 自带 Edge）。
 - **视频编码**：H.265/HEVC 视频浏览器可能只出声不出画，请提前用「转码视频.bat」转成 H.264 再放入素材。
+- **视频体积**：服务端会把整个文件读入再发送，U 盘上大视频启动会明显变慢。**建议视频压到 1080p / 30fps、单个控制在 ~100MB 以内**（4K 60fps 原片请先压缩，参考命令：`ffmpeg -i 原片.mp4 -vf "scale=1920:-2,fps=30" -c:v libx264 -preset veryfast -crf 24 -pix_fmt yuv420p -c:a aac -b:a 192k -movflags +faststart 输出.mp4`）。
 - 备一份**离线备份**：U 盘一份、电脑本地一份。
 
 ### 在 macOS（苹果电脑）上播放
