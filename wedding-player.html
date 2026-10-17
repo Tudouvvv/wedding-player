@@ -822,7 +822,7 @@ var state = {
   modeDirs: { warmup: '', ceremony: '', ending: '' },
   modePlaylists: { warmup: '', ceremony: '', ending: '' },
   // 每个环节的音乐来源：all（全部）/ playlist（歌单）/ local（本地）
-  modeMusicSource: { warmup: 'all', ceremony: 'all', ending: 'all' },
+  modeMusicSource: { warmup: 'local', ceremony: 'local', ending: 'local' },
   // 每个环节专属的本地音乐文件夹（程序目录内相对路径，仅本地服务模式持久）
   modeLocalDirs: { warmup: '', ceremony: '', ending: '' },
   // 已记忆的本地音乐文件夹（程序目录内相对路径，仅本地服务模式）
@@ -1530,7 +1530,7 @@ function modeCardsChipClick(e) {
 }
 function modeSummary(k) {
   var d = state.modeDefs[k];
-  var src = { all: '全部', playlist: '歌单', local: '本地' }[state.modeMusicSource[k] || 'all'];
+  var src = musicPref(k) === 'playlist' ? '在线' : '本地';
   return d.photoDur + '秒 · ' + src + ' · ' + (d.transitions ? d.transitions.length : 0) + '种特效';
 }
 function renderModeCards() {
@@ -1582,11 +1582,10 @@ function renderModeCards() {
       +     '<summary>本环节高级：歌单 / 音乐来源</summary>'
       +     '<label>歌单链接（本环节专用，只填一个，可留空）</label>'
       +     '<input type="text" data-f="playlists" value="' + esc(state.modePlaylists[k] || '') + '" placeholder="粘贴本环节的歌单链接，如 y.qq.com/... 或 music.163.com/...">'
-      +     '<label>音乐来源（本环节播放哪批音乐）</label>'
+      +     '<label>音乐来源（本环节二选一：本地 / 在线，不混合）</label>'
       +     '<select data-f="musicSource">'
-      +     option('all', '全部（歌单 + 本地一起，默认）', state.modeMusicSource[k] || 'all')
-      +     option('playlist', '歌单（只放歌单导入 + 在线直链，需网络）', state.modeMusicSource[k] || 'all')
-      +     option('local', '本地（只放本地已下载/扫描的音乐，离线最稳）', state.modeMusicSource[k] || 'all')
+      +     option('local', '本地（本地已下载/扫描的音乐，离线最稳）', musicPref(k))
+      +     option('playlist', '在线（歌单导入 + 在线直链，需网络）', musicPref(k))
       +     '</select>'
       +   '</details>'
       + '</div>'
@@ -1619,7 +1618,7 @@ function modeCardsInput(e) {
   } else if (f === 'playlists') {
     state.modePlaylists[key] = el.value.trim();
     // 歌单修改后立即重新导入该模式（覆盖）
-    if (SERVER_MODE && el.value.trim() && (state.modeMusicSource[key] || 'all') !== 'local') {
+    if (SERVER_MODE && el.value.trim() && musicPref(key) === 'playlist') {
       autoImportModePlaylists(key, function () {
         buildQueue();
         renderTrackList();
@@ -1627,7 +1626,7 @@ function modeCardsInput(e) {
       });
     }
   } else if (f === 'musicSource') {
-    state.modeMusicSource[key] = el.value || 'all';
+    state.modeMusicSource[key] = el.value === 'playlist' ? 'playlist' : 'local';
     var inPlayer = !$('screenPlayer').classList.contains('hidden');
     if (SERVER_MODE && state.modeMusicSource[key] === 'playlist' && modePlaylistList(key).length) {
       autoImportModePlaylists(key, function () {
@@ -1831,7 +1830,7 @@ function restoreFromConfig(cfg) {
     MODE_KEYS.forEach(function (k) {
       var v = cfg.modeMusicSource[k];
       if (v === 'playlist' || v === 'local') state.modeMusicSource[k] = v;
-      else state.modeMusicSource[k] = 'all';
+      else state.modeMusicSource[k] = 'local';
     });
   }
   if (Array.isArray(cfg.localMusicDirs)) {
@@ -1862,7 +1861,7 @@ function loadConfig() {
       MODE_KEYS.forEach(function (k) {
         var v = cfg.modeMusicSource[k];
         if (v === 'playlist' || v === 'local') state.modeMusicSource[k] = v;
-        else state.modeMusicSource[k] = 'all';
+        else state.modeMusicSource[k] = 'local';
       });
     }
     if (cfg.modeLocalDirs) {
@@ -2454,18 +2453,21 @@ function goSetup() {
   showScreen('setup');
   refreshPreflight();
 }
+// 环节音乐来源只有两种：'local'（本地）或 'playlist'（在线歌单/直链），不混合。
+// 旧配置里的 'all' 一律按 'local' 处理（离线优先）。
+function musicPref(k) { return state.modeMusicSource[k] === 'playlist' ? 'playlist' : 'local'; }
 // 某个环节实际会播放的曲目（与 buildQueue 同规则，供播放队列与演出预检共用）
 function tracksForMode(mk) {
-  var pref = state.modeMusicSource[mk] || 'all';
+  var pref = musicPref(mk);
   // 专属本地目录规则：该环节设置了专属本地音乐文件夹时，本地曲目只保留专属组
   // （手动按环节导入的 manual+srcMode 也属于专属）；未设置专属目录才用通用导入/素材里的本地音乐
   var dedicated = state.modeLocalDirs[mk] || '';
   return state.tracks.filter(function (t) {
     if (!t.modes[mk]) return false;
     var kind = trackKind(t);
-    if (pref === 'playlist') return kind !== 'local';
-    if (pref === 'local' && kind !== 'local') return false;
-    if (kind === 'local' && dedicated) {
+    if (pref === 'playlist') return kind !== 'local'; // 在线：只放歌单 / 在线直链
+    if (kind !== 'local') return false;               // 本地：只放本地
+    if (dedicated) {
       if (t.grp === ('modedir:' + mk)) return true;
       if (t.grp === 'manual' && t.srcMode === mk) return true;
       return false;
@@ -3041,7 +3043,7 @@ function loadModeAssets(key) {
     }));
   }
   // 2) 歌单：有配置 → 异步导入（该环节音乐来源=本地时不导入歌单）
-  var pls = ((state.modeMusicSource[key] || 'all') === 'local') ? [] : modePlaylistList(key);
+  var pls = (musicPref(key) === 'playlist') ? modePlaylistList(key) : [];
   if (pls && pls.length) {
     pending.push(new Promise(function (resolve) {
       autoImportModePlaylists(key, function () { resolve(); });
@@ -3322,7 +3324,7 @@ function preflightCounts(dir) {
 }
 // 某环节预计可播放的音乐数：专属目录按扫描结果统计，其余用已加载曲目
 function modeMusicCount(k) {
-  var pref = state.modeMusicSource[k] || 'all';
+  var pref = musicPref(k);
   var dedicated = state.modeLocalDirs[k] || '';
   var loaded = tracksForMode(k);
   var localLoaded = loaded.filter(function (t) { return trackKind(t) === 'local'; }).length;
@@ -3367,7 +3369,7 @@ function renderPreflight() {
         photoTxt = fmtMedia(pN, vN);
       } else { photoTxt = '进入环节时加载'; photoKnown = false; }
     }
-    var srcLabel = { all: '全部', playlist: '歌单/在线', local: '本地' }[mi.pref];
+    var srcLabel = mi.pref === 'playlist' ? '在线' : '本地';
     var musicTxt = mi.total + ' 首' + (mi.online ? '（含在线 ' + mi.online + ' 首）' : '');
     var bad = (photoKnown && !photoOk) || mi.total === 0;
     html += '<div class="pf-item' + (bad ? ' pf-bad' : '') + '">'
@@ -3390,7 +3392,7 @@ function refreshPreflight() {
   MODE_KEYS.forEach(function (k) {
     var pd = modePhotoDir(k);
     if (pd) dirs[pd] = true;
-    if ((state.modeMusicSource[k] || 'all') !== 'playlist' && state.modeLocalDirs[k]) dirs[state.modeLocalDirs[k]] = true;
+    if (musicPref(k) !== 'playlist' && state.modeLocalDirs[k]) dirs[state.modeLocalDirs[k]] = true;
   });
   Object.keys(dirs).forEach(function (dir) {
     fetch('/api/scan?dir=' + encodeURIComponent(dir)).then(function (r) { return r.json(); }).then(function (d) {
@@ -3627,7 +3629,7 @@ function startupModeAssets() {
     loadModeLocalDir(state.currentMode);
   }
   // 该环节音乐来源=本地：不自动导入歌单（本地音乐由「导入本地音乐」/记忆文件夹在启动时加载）
-  if ((state.modeMusicSource[state.currentMode] || 'all') === 'local') return;
+  if (musicPref(state.currentMode) !== 'playlist') return;
   var items = modePlaylistList(state.currentMode);
   if (!items.length) { autoReimportPlaylists(); return; }
   setImportStatus('自动导入当前模式歌单…');
